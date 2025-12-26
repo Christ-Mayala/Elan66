@@ -4,6 +4,7 @@ import { Screen } from '../../../core/ui/Screen';
 import { Text } from '../../../core/ui/Text';
 import { Button } from '../../../core/ui/Button';
 import { Card } from '../../../core/ui/Card';
+import { BUILD_ID } from '../../../core/utils/buildInfo';
 import { useHabits } from '../context/HabitsContext';
 import { theme } from '../../../core/theme/theme';
 import { clamp, dayIndexFromStart, phaseProgress, toLocalDateId } from '../../../core/utils/dateUtils';
@@ -58,6 +59,7 @@ export function HomeScreen({ navigation }) {
       <View style={{ gap: 12, marginBottom: 12 }}>
         <Text variant="title">Habitudes</Text>
         <Text variant="muted">Hors-ligne. Privé. 66 jours, découpés en 3 phases.</Text>
+        <Text variant="mono">Build: {BUILD_ID}</Text>
 
         <View style={{ flexDirection: 'row', gap: 12 }}>
           <View style={{ flex: 1 }}>
