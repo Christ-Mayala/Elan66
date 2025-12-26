@@ -9,13 +9,17 @@ import { DayState, phaseCopy } from '../../../core/utils/constants';
 import { dayIndexFromStart, toLocalDateId, clamp, phaseProgress } from '../../../core/utils/dateUtils';
 import { theme } from '../../../core/theme/theme';
 import { domainErrorMessageFr } from '../../../core/utils/domainErrors';
+import { HabitTimeline } from '../components/HabitTimeline';
+import { SOSModal } from '../components/SOSModal';
 
 export function HabitDetailScreen({ route, navigation }) {
   const habitId = route.params?.habitId;
-  const { getHabitDetail, setStateForDay, saveNoteForDay, recordSosToday, archive, remove } = useHabits();
+  const { getHabitDetail, setStateForDay, saveNoteForDay, recordSosToday, getSosEligibility, archive, remove } = useHabits();
 
   const [data, setData] = useState({ habit: null, logs: [] });
   const [note, setNote] = useState('');
+  const [sosVisible, setSosVisible] = useState(false);
+  const [sosAlready, setSosAlready] = useState(false);
 
   const today = toLocalDateId(new Date());
 
@@ -44,7 +48,10 @@ export function HabitDetailScreen({ route, navigation }) {
       if (state === DayState.fail) {
         Alert.alert('Analyse', "Qu'est-ce qui a déclenché cela ? Écris-le dans ton journal pour mieux l'anticiper.");
       }
-      setData((d) => ({ ...d, logs: d.logs.some((l) => l.date === log.date) ? d.logs.map((l) => (l.date === log.date ? log : l)) : [...d.logs, log] }));
+      setData((d) => ({
+        ...d,
+        logs: d.logs.some((l) => l.date === log.date) ? d.logs.map((l) => (l.date === log.date ? log : l)) : [...d.logs, log],
+      }));
     } catch (e) {
       Alert.alert('Impossible', domainErrorMessageFr(String(e.message || e)));
     }
@@ -53,27 +60,34 @@ export function HabitDetailScreen({ route, navigation }) {
   const onSaveNote = async () => {
     try {
       const log = await saveNoteForDay({ habitId, dateId: today, note });
-      setData((d) => ({ ...d, logs: d.logs.some((l) => l.date === log.date) ? d.logs.map((l) => (l.date === log.date ? log : l)) : [...d.logs, log] }));
+      setData((d) => ({
+        ...d,
+        logs: d.logs.some((l) => l.date === log.date) ? d.logs.map((l) => (l.date === log.date ? log : l)) : [...d.logs, log],
+      }));
     } catch (e) {
       Alert.alert('Impossible', domainErrorMessageFr(String(e.message || e)));
     }
   };
 
-  const onSos = async () => {
-    if (!habit) return;
-    Alert.alert('SOS', habit.commitment || "Rappelle-toi : pourquoi tu tiens.", [
-      {
-        text: 'Compter comme résisté (1/jour)',
-        onPress: async () => {
-          try {
-            await recordSosToday({ habitId, dateId: today });
-          } catch (e) {
-            Alert.alert('Impossible', domainErrorMessageFr(String(e.message || e)));
-          }
-        },
-      },
-      { text: 'Fermer', style: 'cancel' },
-    ]);
+  const onSosOpen = async () => {
+    try {
+      const res = await getSosEligibility({ habitId, dateId: today });
+      setSosAlready(Boolean(res.already));
+      setSosVisible(true);
+    } catch (e) {
+      Alert.alert('Impossible', domainErrorMessageFr(String(e.message || e)));
+    }
+  };
+
+  const onSosCount = async () => {
+    try {
+      const res = await recordSosToday({ habitId, dateId: today });
+      if (res.didCount) {
+        setSosAlready(true);
+      }
+    } catch (e) {
+      Alert.alert('Impossible', domainErrorMessageFr(String(e.message || e)));
+    }
   };
 
   const onArchive = async () => {
@@ -130,6 +144,16 @@ export function HabitDetailScreen({ route, navigation }) {
         </Card>
 
         <Card>
+          <Text variant="subtitle">Timeline</Text>
+          <Text variant="muted" style={{ marginTop: 6 }}>
+            66 jours en 3 phases (22/22/22). Une journée = 1 validation.
+          </Text>
+          <View style={{ marginTop: 10 }}>
+            <HabitTimeline durationDays={Number(habit.duration_days)} logs={data.logs} />
+          </View>
+        </Card>
+
+        <Card>
           <Text variant="subtitle">Valider aujourd'hui</Text>
           <View style={{ flexDirection: 'row', gap: 10, marginTop: 10 }}>
             <View style={{ flex: 1 }}>
@@ -144,7 +168,7 @@ export function HabitDetailScreen({ route, navigation }) {
           </View>
 
           <View style={{ marginTop: 12 }}>
-            <Button title="SOS (3 min)" variant="ghost" onPress={onSos} />
+            <Button title="SOS (3 min)" variant="ghost" onPress={onSosOpen} />
           </View>
         </Card>
 
@@ -175,6 +199,15 @@ export function HabitDetailScreen({ route, navigation }) {
           </View>
         </Card>
       </ScrollView>
+
+      <SOSModal
+        visible={sosVisible}
+        habit={habit}
+        phase={phase.phase}
+        alreadyCounted={sosAlready}
+        onCount={onSosCount}
+        onClose={() => setSosVisible(false)}
+      />
     </Screen>
   );
 }
