@@ -25,6 +25,15 @@ export const getGlobalStats = async () => {
     [HabitStatus.archived]
   );
 
+  const planned = await db.getFirstAsync(
+    `
+    SELECT SUM(CASE WHEN h.duration_days IS NOT NULL THEN h.duration_days ELSE 0 END) AS total_days
+    FROM habits h
+    WHERE h.status != ?;
+  `,
+    [HabitStatus.archived]
+  );
+
   const sos = await db.getFirstAsync(
     `
     SELECT COUNT(*) as c
@@ -45,6 +54,7 @@ export const getGlobalStats = async () => {
   return {
     habitsActive: Number(habitsActive?.c || 0),
     habitsArchived: Number(habitsArchived?.c || 0),
+    totalDaysPlanned: Number(planned?.total_days || 0),
     totalValidated,
     success,
     resisted,
@@ -52,4 +62,25 @@ export const getGlobalStats = async () => {
     successRate,
     savedLives: Number(sos?.c || 0),
   };
+};
+
+export const getDailyActivity = async ({ sinceDateId }) => {
+  const db = await getDb();
+  const rows = await db.getAllAsync(
+    `
+    SELECT
+      l.date AS date,
+      SUM(CASE WHEN l.state IS NOT NULL THEN 1 ELSE 0 END) AS total_validated,
+      SUM(CASE WHEN l.state = 'success' THEN 1 ELSE 0 END) AS success,
+      SUM(CASE WHEN l.state = 'resisted' THEN 1 ELSE 0 END) AS resisted,
+      SUM(CASE WHEN l.state = 'fail' THEN 1 ELSE 0 END) AS fail
+    FROM daily_logs l
+    INNER JOIN habits h ON h.id = l.habit_id
+    WHERE h.status != ? AND l.date >= ?
+    GROUP BY l.date
+    ORDER BY l.date ASC;
+  `,
+    [HabitStatus.archived, String(sinceDateId)]
+  );
+  return rows;
 };

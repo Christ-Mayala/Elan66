@@ -174,7 +174,7 @@ export function HabitDetailScreen({ route, navigation }) {
 
   return (
     <Screen>
-      <ScrollView contentContainerStyle={{ gap: 12, paddingBottom: 24 }} keyboardShouldPersistTaps="handled">
+      <ScrollView contentContainerStyle={{ gap: 12, paddingBottom: 120 }} keyboardShouldPersistTaps="handled">
         <Card>
           <Text variant="subtitle">Phase {phase.phase} — {phaseInfo.name}</Text>
           <Text variant="muted" style={{ marginTop: 6 }}>{phaseMessage}</Text>

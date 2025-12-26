@@ -78,12 +78,25 @@ export function HomeScreen({ navigation }) {
       <FlatList
         data={items}
         keyExtractor={(it) => it.id}
-        contentContainerStyle={{ gap: 12, paddingBottom: 20 }}
+        contentContainerStyle={{ gap: 12, paddingBottom: 110 }}
         ListEmptyComponent={
           <Card>
-            <Text variant="subtitle">Aucune habitude</Text>
+            <Text variant="subtitle">Bienvenue</Text>
             <Text variant="muted" style={{ marginTop: 6 }}>
-              Crée ta première habitude. Aucun compte. Tes données restent sur ton téléphone.
+              Zéro compte. Zéro cloud. Une progression visible — jour après jour.
+            </Text>
+
+            <View style={{ marginTop: 14 }}>
+              <PlantProgress dayIndex={1} durationDays={66} size="l" />
+            </View>
+
+            <View style={{ marginTop: 14, gap: 10 }}>
+              <Button title="Créer ma première habitude" onPress={() => navigation.navigate('CreateHabit')} />
+              <Button title="Ouvrir le journal" variant="ghost" onPress={() => navigation.navigate('Notes')} />
+            </View>
+
+            <Text variant="muted" style={{ marginTop: 12 }}>
+              Astuce: utilise “#” pour les titres, “-” pour les listes, et “- [ ]” pour les checklists.
             </Text>
           </Card>
         }

@@ -53,7 +53,7 @@ export function CreateHabitScreen({ navigation }) {
 
   return (
     <Screen>
-      <ScrollView contentContainerStyle={{ gap: 12, paddingBottom: 24 }} keyboardShouldPersistTaps="handled">
+      <ScrollView contentContainerStyle={{ gap: 12, paddingBottom: 110 }} keyboardShouldPersistTaps="handled">
         <Text variant="title">Nouvelle habitude</Text>
 
         <Card>

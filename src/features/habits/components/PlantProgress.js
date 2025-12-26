@@ -7,7 +7,7 @@ const clamp01 = (n) => Math.max(0, Math.min(1, n));
 
 export function PlantProgress({ dayIndex, durationDays, size = 'm' }) {
   const dims = size === 's'
-    ? { h: 52, w: 140, stemW: 6, leaf: 14 }
+    ? { h: 52, w: 120, stemW: 6, leaf: 14 }
     : size === 'l'
       ? { h: 92, w: 220, stemW: 8, leaf: 18 }
       : { h: 72, w: 180, stemW: 7, leaf: 16 };
@@ -90,7 +90,7 @@ function Leaf({ size, color, flip }) {
         borderBottomLeftRadius: size,
         borderBottomRightRadius: size,
         backgroundColor: color,
-        opacity: 0.82,
+        opacity: 0.92,
         transform: [{ rotate: flip ? '-28deg' : '28deg' }, { scaleX: flip ? -1 : 1 }],
       }}
     />
@@ -105,9 +105,9 @@ const styles = StyleSheet.create({
   pot: {
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,
-    borderBottomLeftRadius: 4,
-    borderBottomRightRadius: 4,
-    backgroundColor: theme.colors.surface,
+    borderBottomLeftRadius: 6,
+    borderBottomRightRadius: 6,
+    backgroundColor: theme.colors.surface2,
     borderWidth: 1,
     borderColor: theme.colors.border,
     position: 'absolute',
@@ -117,7 +117,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 14,
     height: 1,
-    backgroundColor: theme.colors.border,
+    backgroundColor: 'rgba(148,163,184,0.22)',
   },
   stemWrap: {
     position: 'absolute',
@@ -132,7 +132,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 0,
     borderRadius: 99,
-    backgroundColor: theme.colors.surface2,
+    backgroundColor: 'rgba(15,26,51,0.70)',
     borderWidth: 1,
     borderColor: theme.colors.border,
     overflow: 'hidden',
@@ -140,7 +140,7 @@ const styles = StyleSheet.create({
   stemFill: {
     position: 'absolute',
     bottom: 0,
-    backgroundColor: 'rgba(229,231,235,0.85)',
+    backgroundColor: 'rgba(34,211,238,0.75)',
   },
   leafRow: {
     position: 'absolute',
@@ -152,11 +152,11 @@ const styles = StyleSheet.create({
   },
   bud: {
     position: 'absolute',
-    top: 0,
+    top: -2,
     width: 10,
     height: 10,
     borderRadius: 5,
     backgroundColor: theme.colors.text,
-    opacity: 0.9,
+    opacity: 0.95,
   },
 });
