@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Alert, Pressable, ScrollView, StyleSheet, TextInput, View } from 'react-native';
+import { animateNext, enableLayoutAnimation } from '../../../core/utils/layoutAnim';
 import { Ionicons } from '@expo/vector-icons';
 import { Screen } from '../../../core/ui/Screen';
 import { Card } from '../../../core/ui/Card';
@@ -18,10 +19,12 @@ export function NotesListScreen({ navigation }) {
 
   const refresh = async () => {
     const rows = await listNotes();
+    animateNext();
     setItems(rows);
   };
 
   useEffect(() => {
+    enableLayoutAnimation();
     refresh();
   }, []);
 
@@ -63,7 +66,7 @@ export function NotesListScreen({ navigation }) {
       <ScrollView contentContainerStyle={{ gap: 12, paddingBottom: 120 }} keyboardShouldPersistTaps="handled">
         <View style={styles.header}>
           <View style={{ flex: 1 }}>
-            <Text variant="title">Journal</Text>
+            <Text variant="display">Journal</Text>
             <Text variant="muted">Bloc-notes privé. Structure avec titres, listes et checklists.</Text>
           </View>
           <Pressable onPress={onNew} style={styles.fabTop}>
