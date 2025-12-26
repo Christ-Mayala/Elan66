@@ -63,12 +63,32 @@ const migrateV1 = async (db) => {
   await db.execAsync('CREATE INDEX IF NOT EXISTS idx_sos_events_habit_date ON sos_events(habit_id, date);');
 };
 
+const migrateV2 = async (db) => {
+  await db.execAsync(`
+    CREATE TABLE IF NOT EXISTS diary_entries (
+      id TEXT PRIMARY KEY NOT NULL,
+      date TEXT NOT NULL,
+      text TEXT,
+      created_at TEXT NOT NULL,
+      updated_at TEXT NOT NULL,
+      UNIQUE(date)
+    );
+  `);
+  await db.execAsync('CREATE INDEX IF NOT EXISTS idx_diary_entries_date ON diary_entries(date);');
+};
+
 const migrate = async (db) => {
   const row = await db.getFirstAsync('PRAGMA user_version;');
   const current = Number(row?.user_version || 0);
   if (current < 1) {
     await migrateV1(db);
     await db.execAsync('PRAGMA user_version = 1;');
+  }
+  const row2 = await db.getFirstAsync('PRAGMA user_version;');
+  const current2 = Number(row2?.user_version || 0);
+  if (current2 < 2) {
+    await migrateV2(db);
+    await db.execAsync('PRAGMA user_version = 2;');
   }
 };
 
@@ -88,6 +108,7 @@ export const wipeAllData = async () => {
   await db.execAsync('DROP TABLE IF EXISTS daily_logs;');
   await db.execAsync('DROP TABLE IF EXISTS habits;');
   await db.execAsync('DROP TABLE IF EXISTS app_settings;');
+  await db.execAsync('DROP TABLE IF EXISTS diary_entries;');
   await db.execAsync('PRAGMA foreign_keys = ON;');
   await db.execAsync('PRAGMA user_version = 0;');
   await migrate(db);

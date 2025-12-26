@@ -30,6 +30,7 @@ export function SOSModal({ visible, habit, phase, onCount, alreadyCounted, onClo
   }, [visible]);
 
   const phaseInfo = phaseCopy[phase || 1];
+  const phaseMessage = phaseInfo?.message?.[habit?.discipline_mode] || phaseInfo?.message?.soft || '';
 
   return (
     <Modal visible={visible} animationType="fade" presentationStyle="fullScreen" onRequestClose={onClose}>
@@ -47,7 +48,7 @@ export function SOSModal({ visible, habit, phase, onCount, alreadyCounted, onClo
               <Text variant="mono" style={{ color: phaseInfo.color }}>
                 Phase {phase} — {phaseInfo.name}
               </Text>
-              <Text variant="muted">{phaseInfo.message}</Text>
+              <Text variant="muted">{phaseMessage}</Text>
 
               <View style={styles.timerWrap}>
                 <Text style={styles.timer}>{format(remaining)}</Text>

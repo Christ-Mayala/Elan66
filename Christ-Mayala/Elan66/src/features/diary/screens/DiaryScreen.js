@@ -1,0 +1,139 @@
+import React, { useEffect, useMemo, useState } from 'react';
+import { Alert, Pressable, ScrollView, StyleSheet, TextInput, View } from 'react-native';
+import { Screen } from '../../../core/ui/Screen';
+import { Text } from '../../../core/ui/Text';
+import { Card } from '../../../core/ui/Card';
+import { Button } from '../../../core/ui/Button';
+import { theme } from '../../../core/theme/theme';
+import { addDaysLocal, toLocalDateId } from '../../../core/utils/dateUtils';
+import { getDiaryEntryByDate, listRecentDiaryEntries, upsertDiaryEntry } from '../data/diaryRepo';
+
+export function DiaryScreen() {
+  const today = toLocalDateId(new Date());
+
+  const [dateId, setDateId] = useState(today);
+  const [text, setText] = useState('');
+  const [recent, setRecent] = useState([]);
+
+  useEffect(() => {
+    (async () => {
+      const e = await getDiaryEntryByDate(dateId);
+      setText(e?.text || '');
+    })();
+  }, [dateId]);
+
+  useEffect(() => {
+    (async () => {
+      const r = await listRecentDiaryEntries(14);
+      setRecent(r);
+    })();
+  }, [dateId]);
+
+  const isToday = useMemo(() => dateId === today, [dateId, today]);
+
+  const onSave = async () => {
+    try {
+      await upsertDiaryEntry({ dateId, text });
+      const r = await listRecentDiaryEntries(14);
+      setRecent(r);
+    } catch {
+      Alert.alert('Erreur', 'Impossible d\'enregistrer.');
+    }
+  };
+
+  return (
+    <Screen>
+      <ScrollView contentContainerStyle={{ gap: 12, paddingBottom: 24 }} keyboardShouldPersistTaps="handled">
+        <Text variant="title">Journal</Text>
+        <Text variant="muted">Court. Privé. Sans analyse automatique.</Text>
+
+        <Card>
+          <View style={styles.dateRow}>
+            <Pressable onPress={() => setDateId(addDaysLocal(dateId, -1))} style={styles.dateBtn}>
+              <Text>←</Text>
+            </Pressable>
+            <View style={{ alignItems: 'center' }}>
+              <Text variant="subtitle">{dateId}</Text>
+              <Text variant="muted">{isToday ? "Aujourd'hui" : ' '}</Text>
+            </View>
+            <Pressable onPress={() => setDateId(addDaysLocal(dateId, 1))} style={styles.dateBtn}>
+              <Text>→</Text>
+            </Pressable>
+          </View>
+
+          <TextInput
+            value={text}
+            onChangeText={setText}
+            placeholder="Écrire sans filtre. Quelques lignes suffisent."
+            placeholderTextColor={theme.colors.textMuted}
+            style={[styles.input, styles.multiline]}
+            multiline
+          />
+
+          <View style={{ marginTop: 10 }}>
+            <Button title="Enregistrer" onPress={onSave} />
+          </View>
+        </Card>
+
+        <Card>
+          <Text variant="subtitle">Derniers jours</Text>
+          <View style={{ marginTop: 10, gap: 10 }}>
+            {recent.length === 0 ? (
+              <Text variant="muted">Aucune entrée.</Text>
+            ) : (
+              recent.map((e) => (
+                <Pressable key={e.id} onPress={() => setDateId(e.date)} style={styles.recentRow}>
+                  <View style={{ flex: 1 }}>
+                    <Text>{e.date}</Text>
+                    <Text variant="muted" numberOfLines={1} style={{ marginTop: 4 }}>
+                      {(e.text || '').trim() ? (e.text || '').trim() : '—'}
+                    </Text>
+                  </View>
+                </Pressable>
+              ))
+            )}
+          </View>
+        </Card>
+      </ScrollView>
+    </Screen>
+  );
+}
+
+const styles = StyleSheet.create({
+  input: {
+    marginTop: 10,
+    backgroundColor: theme.colors.surface2,
+    borderRadius: theme.radius.m,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+    paddingHorizontal: 12,
+    paddingVertical: 12,
+    color: theme.colors.text,
+  },
+  multiline: {
+    minHeight: 170,
+    textAlignVertical: 'top',
+  },
+  dateRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  dateBtn: {
+    width: 44,
+    height: 44,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: theme.radius.m,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+    backgroundColor: theme.colors.surface2,
+  },
+  recentRow: {
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    borderRadius: theme.radius.m,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+  },
+});

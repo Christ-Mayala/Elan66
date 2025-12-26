@@ -25,17 +25,41 @@ export const phaseCopy = {
   1: {
     name: 'Destruction',
     color: '#EF4444',
-    message: "Tu es en train de déconstruire un ancien schéma. La résistance est normale.",
+    message: {
+      soft: "Tu es en train de déconstruire un ancien schéma. La résistance est normale.",
+      strict: 'Tu déconstruis. La résistance est attendue. Tiens.',
+    },
   },
   2: {
     name: 'Installation',
     color: '#F59E0B',
-    message: 'Le changement est en cours. Continue, même quand tu doutes.',
+    message: {
+      soft: 'Le changement est en cours. Continue, même quand tu doutes.',
+      strict: 'Continue. Même quand tu doutes. Surtout quand tu doutes.',
+    },
   },
   3: {
     name: 'Intégration',
     color: '#22C55E',
-    message: "Tu deviens la personne qui n’a plus besoin de lutter.",
+    message: {
+      soft: "Tu deviens la personne qui n’a plus besoin de lutter.",
+      strict: 'Consolide. Répète. Ne lâche rien.',
+    },
+  },
+};
+
+export const dailyNudgesByPhase = {
+  1: {
+    soft: "Objectif: tenir, pas performer.",
+    strict: 'Tiens. Point.',
+  },
+  2: {
+    soft: 'Persévérance consciente. Un jour à la fois.',
+    strict: 'Fais le travail. Un jour.',
+  },
+  3: {
+    soft: 'Consolidation. Laisse l’effort devenir simple.',
+    strict: 'Consolide. Ne redescends pas.',
   },
 };
 

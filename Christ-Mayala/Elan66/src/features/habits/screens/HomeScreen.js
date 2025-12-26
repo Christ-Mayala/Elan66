@@ -8,6 +8,7 @@ import { useHabits } from '../context/HabitsContext';
 import { theme } from '../../../core/theme/theme';
 import { clamp, dayIndexFromStart, phaseProgress, toLocalDateId } from '../../../core/utils/dateUtils';
 import { SOSModal } from '../components/SOSModal';
+import { RouteProgress } from '../components/RouteProgress';
 import { domainErrorMessageFr } from '../../../core/utils/domainErrors';
 
 export function HomeScreen({ navigation }) {
@@ -109,18 +110,12 @@ export function HomeScreen({ navigation }) {
                   </View>
                 </View>
 
-                <View style={{ alignItems: 'flex-end' }}>
+                <View style={{ alignItems: 'flex-end', width: 130 }}>
                   <Text variant="mono">
                     {item.dayIndex}/{item.duration_days}
                   </Text>
-                  <View style={styles.progressOuter}>
-                    <View
-                      style={{
-                        height: '100%',
-                        width: `${Math.round(item.progress * 100)}%`,
-                        backgroundColor: theme.colors.accent,
-                      }}
-                    />
+                  <View style={{ width: '100%', marginTop: 8 }}>
+                    <RouteProgress dayIndex={item.dayIndex} durationDays={Number(item.duration_days)} />
                   </View>
                 </View>
               </View>

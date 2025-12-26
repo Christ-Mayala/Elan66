@@ -10,6 +10,7 @@ import { dayIndexFromStart, toLocalDateId, clamp, phaseProgress } from '../../..
 import { theme } from '../../../core/theme/theme';
 import { domainErrorMessageFr } from '../../../core/utils/domainErrors';
 import { HabitTimeline } from '../components/HabitTimeline';
+import { RouteProgress } from '../components/RouteProgress';
 import { SOSModal } from '../components/SOSModal';
 
 export function HabitDetailScreen({ route, navigation }) {
@@ -127,19 +128,20 @@ export function HabitDetailScreen({ route, navigation }) {
   }
 
   const phaseInfo = phaseCopy[phase.phase];
+  const phaseMessage = phaseInfo?.message?.[habit.discipline_mode] || phaseInfo?.message?.soft || '';
 
   return (
     <Screen>
       <ScrollView contentContainerStyle={{ gap: 12, paddingBottom: 24 }} keyboardShouldPersistTaps="handled">
         <Card>
           <Text variant="subtitle">Phase {phase.phase} — {phaseInfo.name}</Text>
-          <Text variant="muted" style={{ marginTop: 6 }}>{phaseInfo.message}</Text>
+          <Text variant="muted" style={{ marginTop: 6 }}>{phaseMessage}</Text>
           <View style={{ marginTop: 10, flexDirection: 'row', justifyContent: 'space-between' }}>
             <Text variant="mono">Jour {dayIndex}/{habit.duration_days}</Text>
             <Text variant="mono">{phase.inPhase}/{phase.phaseTotal}</Text>
           </View>
-          <View style={styles.barOuter}>
-            <View style={[styles.barInner, { width: `${Math.round((dayIndex / Number(habit.duration_days)) * 100)}%` }]} />
+          <View style={{ marginTop: 10 }}>
+            <RouteProgress dayIndex={dayIndex} durationDays={Number(habit.duration_days)} />
           </View>
         </Card>
 

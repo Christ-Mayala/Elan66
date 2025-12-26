@@ -1,6 +1,7 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { HomeScreen } from '../../features/habits/screens/HomeScreen';
+import { DiaryScreen } from '../../features/diary/screens/DiaryScreen';
 import { StatsScreen } from '../../features/stats/screens/StatsScreen';
 import { SettingsScreen } from '../../features/settings/screens/SettingsScreen';
 import { theme } from '../../core/theme/theme';
@@ -21,6 +22,7 @@ export function TabsNavigator() {
       }}
     >
       <Tab.Screen name="Home" component={HomeScreen} options={{ title: 'Habitudes' }} />
+      <Tab.Screen name="Diary" component={DiaryScreen} options={{ title: 'Journal' }} />
       <Tab.Screen name="Stats" component={StatsScreen} options={{ title: 'Stats' }} />
       <Tab.Screen name="Settings" component={SettingsScreen} options={{ title: 'Réglages' }} />
     </Tab.Navigator>
