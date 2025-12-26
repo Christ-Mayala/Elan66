@@ -8,6 +8,7 @@ import { theme } from '../../../core/theme/theme';
 import { exportAllDataToJson, importAllDataFromJson } from '../../../core/services/exportImport';
 import { domainErrorMessageFr } from '../../../core/utils/domainErrors';
 import { getDailyReminderTime, setDailyReminderTime, syncDailyCheckinsForHabits } from '../../../core/services/notifications';
+import { isExpoGo } from '../../../core/utils/runtime';
 import { useHabits } from '../../habits/context/HabitsContext';
 
 export function SettingsScreen() {
@@ -27,8 +28,12 @@ export function SettingsScreen() {
   const onSaveTime = async () => {
     try {
       const t = await setDailyReminderTime({ hour, minute });
-      await syncDailyCheckinsForHabits(state.habits);
-      Alert.alert('OK', `Rappel quotidien : ${String(t.hour).padStart(2, '0')}:${String(t.minute).padStart(2, '0')}`);
+      if (!isExpoGo()) {
+        await syncDailyCheckinsForHabits(state.habits);
+        Alert.alert('OK', `Rappel quotidien : ${String(t.hour).padStart(2, '0')}:${String(t.minute).padStart(2, '0')}`);
+        return;
+      }
+      Alert.alert('OK', `Heure enregistrée : ${String(t.hour).padStart(2, '0')}:${String(t.minute).padStart(2, '0')}`);
     } catch (e) {
       Alert.alert('Erreur', domainErrorMessageFr(String(e.message || e)));
     }
@@ -57,7 +62,7 @@ export function SettingsScreen() {
               const res = await importAllDataFromJson({ replaceAll: true });
               if (res?.canceled) return;
               const habits = await refreshHabits();
-              await syncDailyCheckinsForHabits(habits);
+              if (!isExpoGo()) await syncDailyCheckinsForHabits(habits);
               Alert.alert(
                 'Import terminé',
                 `Habitudes: ${res.counts?.habits || 0}\nLogs: ${res.counts?.logs || 0}\nSOS: ${res.counts?.sos || 0}\nJournal: ${res.counts?.diary || 0}`
@@ -73,7 +78,7 @@ export function SettingsScreen() {
 
   return (
     <Screen>
-      <ScrollView contentContainerStyle={{ gap: 12, paddingBottom: 24 }} keyboardShouldPersistTaps="handled">
+      <ScrollView contentContainerStyle={{ gap: 12, paddingBottom: 110 }} keyboardShouldPersistTaps="handled">
         <Text variant="title">Réglages</Text>
 
         <Card>
@@ -81,6 +86,11 @@ export function SettingsScreen() {
           <Text variant="muted" style={{ marginTop: 6 }}>
             Rappel quotidien à heure fixe. (Local)
           </Text>
+          {isExpoGo() ? (
+            <Text variant="muted" style={{ marginTop: 10, color: theme.colors.warn }}>
+              Dans Expo Go, les notifications sont limitées. Utilise un dev build pour activer totalement cette fonctionnalité.
+            </Text>
+          ) : null}
 
           <View style={{ flexDirection: 'row', gap: 10, marginTop: 12 }}>
             <View style={{ flex: 1 }}>

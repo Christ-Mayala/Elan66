@@ -1,11 +1,11 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import * as Notifications from 'expo-notifications';
 import { listHabitsWithSummary, createHabit, getHabitById, archiveHabit, deleteHabit } from '../data/habitsRepo';
 import { listLogsForHabit, setDayState, upsertNote } from '../data/logsRepo';
 import { recordSosOncePerDay, hasSosForDate } from '../data/sosRepo';
 import { DayState } from '../../../core/utils/constants';
 import { addDaysLocal, dayIndexFromStart, toLocalDateId } from '../../../core/utils/dateUtils';
-import { cancelAllForHabit, scheduleNoTwoDaysForTomorrow, syncDailyCheckinsForHabits } from '../../../core/services/notifications';
+import { addNotificationResponseReceivedListener, cancelAllForHabit, scheduleNoTwoDaysForTomorrow, syncDailyCheckinsForHabits } from '../../../core/services/notifications';
+import { isExpoGo } from '../../../core/utils/runtime';
 
 const HabitsContext = createContext(null);
 
@@ -43,6 +43,7 @@ export function HabitsProvider({ children }) {
 
   useEffect(() => {
     if (!state.isReady) return;
+    if (isExpoGo()) return;
     const key = state.habits.map((h) => h.id).join('|');
     if (notifSyncRef.current.key === key) return;
     notifSyncRef.current.key = key;
@@ -55,7 +56,7 @@ export function HabitsProvider({ children }) {
       try {
         const habit = await createHabit(payload);
         const habits = await refreshHabits();
-        syncDailyCheckinsForHabits(habits);
+        if (!isExpoGo()) syncDailyCheckinsForHabits(habits);
         return habit;
       } finally {
         setState((s) => ({ ...s, isBusy: false }));
@@ -76,7 +77,7 @@ export function HabitsProvider({ children }) {
       const log = await setDayState({ habit, dateId, state: dayState });
 
       const todayId = toLocalDateId(new Date());
-      if (dayState === DayState.fail && dateId === todayId) {
+      if (!isExpoGo() && dayState === DayState.fail && dateId === todayId) {
         const tomorrowId = addDaysLocal(dateId, 1);
         const tomorrowIndex = dayIndexFromStart(habit.start_date, tomorrowId);
         if (tomorrowIndex >= 1 && tomorrowIndex <= Number(habit.duration_days)) {
@@ -130,20 +131,25 @@ export function HabitsProvider({ children }) {
   );
 
   useEffect(() => {
-    const sub = Notifications.addNotificationResponseReceivedListener(async (response) => {
-      const action = response?.actionIdentifier;
-      const notif = response?.notification;
-      const habitId = notif?.request?.content?.data?.habitId;
+    if (isExpoGo()) return;
 
-      const dayState = actionToDayState(action);
-      if (!habitId || !dayState) return;
+    let sub;
+    (async () => {
+      sub = await addNotificationResponseReceivedListener(async (response) => {
+        const action = response?.actionIdentifier;
+        const notif = response?.notification;
+        const habitId = notif?.request?.content?.data?.habitId;
 
-      try {
-        await setStateForDay({ habitId, state: dayState });
-      } catch {}
-    });
+        const dayState = actionToDayState(action);
+        if (!habitId || !dayState) return;
 
-    return () => sub.remove();
+        try {
+          await setStateForDay({ habitId, state: dayState });
+        } catch {}
+      });
+    })();
+
+    return () => sub?.remove?.();
   }, [setStateForDay]);
 
   const value = useMemo(

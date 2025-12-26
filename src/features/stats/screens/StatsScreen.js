@@ -22,7 +22,7 @@ export function StatsScreen() {
 
   return (
     <Screen>
-      <ScrollView contentContainerStyle={{ gap: 12, paddingBottom: 24 }}>
+      <ScrollView contentContainerStyle={{ gap: 12, paddingBottom: 110 }}>
         <Text variant="title">Statistiques</Text>
 
         <Card>
