@@ -75,7 +75,8 @@ export function HabitsProvider({ children }) {
       const habit = await getHabitById(habitId);
       const log = await setDayState({ habit, dateId, state: dayState });
 
-      if (dayState === DayState.fail) {
+      const todayId = toLocalDateId(new Date());
+      if (dayState === DayState.fail && dateId === todayId) {
         const tomorrowId = addDaysLocal(dateId, 1);
         const tomorrowIndex = dayIndexFromStart(habit.start_date, tomorrowId);
         if (tomorrowIndex >= 1 && tomorrowIndex <= Number(habit.duration_days)) {

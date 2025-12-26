@@ -60,7 +60,7 @@ export function SettingsScreen() {
               await syncDailyCheckinsForHabits(habits);
               Alert.alert(
                 'Import terminé',
-                `Habitudes: ${res.counts?.habits || 0}\nLogs: ${res.counts?.logs || 0}\nSOS: ${res.counts?.sos || 0}`
+                `Habitudes: ${res.counts?.habits || 0}\nLogs: ${res.counts?.logs || 0}\nSOS: ${res.counts?.sos || 0}\nJournal: ${res.counts?.diary || 0}`
               );
             } catch (e) {
               Alert.alert('Erreur', domainErrorMessageFr(String(e.message || e)));

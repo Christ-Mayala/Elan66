@@ -5,7 +5,7 @@ import { phaseCopy } from '../../../core/utils/constants';
 
 export function RouteProgress({ dayIndex, durationDays }) {
   const pct = useMemo(() => {
-    const d = Math.max(1, Math.min(Number(durationDays) || 66, Number(durationDays) || 66));
+    const d = Math.max(1, Number(durationDays) || 66);
     const di = Math.max(1, Math.min(Number(dayIndex) || 1, d));
     return (di - 1) / (d - 1 || 1);
   }, [dayIndex, durationDays]);

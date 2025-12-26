@@ -3,7 +3,7 @@ import * as Sharing from 'expo-sharing';
 import * as DocumentPicker from 'expo-document-picker';
 import { getDb, wipeAllData } from '../db/database';
 
-export const EXPORT_SCHEMA_VERSION = 1;
+export const EXPORT_SCHEMA_VERSION = 2;
 
 export const exportAllDataToJson = async () => {
   const db = await getDb();
@@ -12,11 +12,12 @@ export const exportAllDataToJson = async () => {
   const logs = await db.getAllAsync('SELECT * FROM daily_logs ORDER BY date ASC;');
   const sos = await db.getAllAsync('SELECT * FROM sos_events ORDER BY date ASC;');
   const settings = await db.getAllAsync('SELECT * FROM app_settings ORDER BY key ASC;');
+  const diary = await db.getAllAsync('SELECT * FROM diary_entries ORDER BY date ASC;');
 
   const payload = {
     schemaVersion: EXPORT_SCHEMA_VERSION,
     exportedAt: new Date().toISOString(),
-    data: { habits, logs, sos, settings },
+    data: { habits, logs, sos, settings, diary },
   };
 
   const json = JSON.stringify(payload, null, 2);
@@ -37,12 +38,16 @@ export const exportAllDataToJson = async () => {
 
 const validatePayload = (payload) => {
   if (!payload || typeof payload !== 'object') throw new Error('INVALID_EXPORT');
-  if (payload.schemaVersion !== EXPORT_SCHEMA_VERSION) throw new Error('UNSUPPORTED_SCHEMA');
+  if (payload.schemaVersion !== 1 && payload.schemaVersion !== EXPORT_SCHEMA_VERSION) throw new Error('UNSUPPORTED_SCHEMA');
   const d = payload.data;
   if (!d || typeof d !== 'object') throw new Error('INVALID_EXPORT');
   if (!Array.isArray(d.habits) || !Array.isArray(d.logs) || !Array.isArray(d.sos) || !Array.isArray(d.settings)) {
     throw new Error('INVALID_EXPORT');
   }
+  if (payload.schemaVersion === 1) {
+    return { ...d, diary: [] };
+  }
+  if (!Array.isArray(d.diary)) throw new Error('INVALID_EXPORT');
   return d;
 };
 
@@ -145,7 +150,31 @@ export const importAllDataFromJson = async ({ replaceAll = true } = {}) => {
     );
   }
 
+  for (const e of data.diary || []) {
+    await db.runAsync(
+      `
+      INSERT INTO diary_entries(id,date,text,created_at,updated_at)
+      VALUES(?,?,?,?,?)
+      ON CONFLICT(date) DO UPDATE SET
+        id=excluded.id,
+        text=excluded.text,
+        created_at=excluded.created_at,
+        updated_at=excluded.updated_at;
+    `,
+      [e.id, e.date, e.text, e.created_at, e.updated_at]
+    );
+  }
+
   await db.execAsync('PRAGMA foreign_keys = ON;');
 
-  return { imported: true, counts: { habits: data.habits.length, logs: data.logs.length, sos: data.sos.length, settings: data.settings.length } };
+  return {
+    imported: true,
+    counts: {
+      habits: data.habits.length,
+      logs: data.logs.length,
+      sos: data.sos.length,
+      settings: data.settings.length,
+      diary: (data.diary || []).length,
+    },
+  };
 };
