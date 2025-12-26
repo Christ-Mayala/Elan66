@@ -6,6 +6,8 @@ import { Card } from '../../../core/ui/Card';
 import { Text } from '../../../core/ui/Text';
 import { theme } from '../../../core/theme/theme';
 import { getNoteById, softDeleteNote, updateNote } from '../data/notesRepo';
+import { NotePreview } from '../components/NotePreview';
+import { Segmented } from '../components/segmented';
 
 const insertAtCursor = (value, selection, insert) => {
   const start = selection?.start ?? value.length;
@@ -22,7 +24,9 @@ export function NoteEditorScreen({ navigation, route }) {
   const [body, setBody] = useState('');
   const [pinned, setPinned] = useState(0);
   const [sel, setSel] = useState({ start: 0, end: 0 });
+  const [mode, setMode] = useState('edit');
   const bodyRef = useRef(null);
+  const saveTimer = useRef(null);
 
   const canSave = useMemo(() => Boolean(id), [id]);
 
@@ -47,6 +51,27 @@ export function NoteEditorScreen({ navigation, route }) {
     await load();
   };
 
+  useEffect(() => {
+    if (!canSave) return;
+    if (!note) return;
+
+    if (saveTimer.current) clearTimeout(saveTimer.current);
+    saveTimer.current = setTimeout(() => {
+      updateNote({ id, title, body, pinned });
+    }, 650);
+
+    return () => {
+      if (saveTimer.current) clearTimeout(saveTimer.current);
+    };
+  }, [title, body, pinned, canSave, id, note]);
+
+  const onBack = async () => {
+    try {
+      await updateNote({ id, title, body, pinned });
+    } catch {}
+    navigation.goBack();
+  };
+
   const onDelete = () => {
     Alert.alert('Supprimer', 'Supprimer cette note ?', [
       { text: 'Annuler', style: 'cancel' },
@@ -62,12 +87,23 @@ export function NoteEditorScreen({ navigation, route }) {
   };
 
   const onInsert = (s) => {
+    if (mode !== 'edit') setMode('edit');
     const res = insertAtCursor(body, sel, s);
     setBody(res.next);
     requestAnimationFrame(() => {
       setSel(res.selection);
       bodyRef.current?.focus?.();
     });
+  };
+
+  const toggleTaskAtLine = (lineIndex) => {
+    const lines = String(body || '').replace(/\r\n/g, '\n').split('\n');
+    const l = String(lines[lineIndex] || '');
+    const m = l.match(/^-\s\[( |x|X)\]\s+(.*)$/);
+    if (!m) return;
+    const checked = String(m[1]).toLowerCase() === 'x';
+    lines[lineIndex] = `- [${checked ? ' ' : 'x'}] ${m[2]}`;
+    setBody(lines.join('\n'));
   };
 
   if (!note) {
@@ -84,7 +120,7 @@ export function NoteEditorScreen({ navigation, route }) {
     <Screen>
       <ScrollView contentContainerStyle={{ gap: 12, paddingBottom: 120 }} keyboardShouldPersistTaps="handled">
         <View style={styles.topbar}>
-          <Pressable onPress={() => navigation.goBack()} style={styles.iconBtn}>
+          <Pressable onPress={onBack} style={styles.iconBtn}>
             <Ionicons name="chevron-back" size={20} color={theme.colors.text} />
           </Pressable>
           <Text variant="subtitle" numberOfLines={1} style={{ flex: 1 }}>
@@ -114,28 +150,46 @@ export function NoteEditorScreen({ navigation, route }) {
 
         <Card style={{ padding: 0 }}>
           <View style={styles.toolbar}>
-            <ToolButton label="#" onPress={() => onInsert('# ')} />
-            <ToolButton label="##" onPress={() => onInsert('## ')} />
-            <ToolButton label="•" onPress={() => onInsert('- ')} />
-            <ToolButton label="☐" onPress={() => onInsert('- [ ] ')} />
-            <ToolButton label=">" onPress={() => onInsert('> ')} />
-            <ToolButton label="{}" onPress={() => onInsert('`code`')} />
+            <View style={styles.toolsRow}>
+              <ToolButton label="#" onPress={() => onInsert('# ')} />
+              <ToolButton label="##" onPress={() => onInsert('## ')} />
+              <ToolButton label="•" onPress={() => onInsert('- ')} />
+              <ToolButton label="☐" onPress={() => onInsert('- [ ] ')} />
+              <ToolButton label=">" onPress={() => onInsert('> ')} />
+              <ToolButton label="{}" onPress={() => onInsert('`code`')} />
+            </View>
+            <View style={{ marginTop: 10 }}>
+              <Segmented
+                value={mode}
+                options={[
+                  { value: 'edit', label: 'Éditer' },
+                  { value: 'preview', label: 'Aperçu' },
+                ]}
+                onChange={setMode}
+              />
+            </View>
           </View>
           <View style={{ padding: theme.spacing.m, paddingTop: 12 }}>
             <Text variant="muted">Contenu</Text>
-            <TextInput
-              ref={bodyRef}
-              value={body}
-              onChangeText={setBody}
-              onSelectionChange={(e) => setSel(e.nativeEvent.selection)}
-              selection={sel}
-              placeholder="Écris ici…"
-              placeholderTextColor={theme.colors.textMuted}
-              style={[styles.input, styles.body]}
-              multiline
-              textAlignVertical="top"
-              autoCorrect
-            />
+            {mode === 'edit' ? (
+              <TextInput
+                ref={bodyRef}
+                value={body}
+                onChangeText={setBody}
+                onSelectionChange={(e) => setSel(e.nativeEvent.selection)}
+                selection={sel}
+                placeholder="Écris ici…"
+                placeholderTextColor={theme.colors.textMuted}
+                style={[styles.input, styles.body]}
+                multiline
+                textAlignVertical="top"
+                autoCorrect
+              />
+            ) : (
+              <View style={[styles.preview, styles.body]}>
+                <NotePreview body={body} onToggleTaskAtLine={toggleTaskAtLine} />
+              </View>
+            )}
           </View>
         </Card>
 
@@ -200,12 +254,14 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(251,113,133,0.35)',
   },
   toolbar: {
-    flexDirection: 'row',
-    gap: 8,
     padding: theme.spacing.m,
     borderBottomWidth: 1,
     borderBottomColor: theme.colors.border,
     backgroundColor: 'rgba(15,26,51,0.45)',
+  },
+  toolsRow: {
+    flexDirection: 'row',
+    gap: 8,
   },
   toolBtn: {
     height: 36,
@@ -230,5 +286,14 @@ const styles = StyleSheet.create({
   body: {
     minHeight: 260,
     lineHeight: 20,
+  },
+  preview: {
+    marginTop: 6,
+    backgroundColor: theme.colors.surface2,
+    borderRadius: theme.radius.m,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+    paddingHorizontal: 12,
+    paddingVertical: 12,
   },
 });

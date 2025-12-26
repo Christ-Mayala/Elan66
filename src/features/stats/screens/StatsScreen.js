@@ -5,10 +5,11 @@ import { Screen } from '../../../core/ui/Screen';
 import { Text } from '../../../core/ui/Text';
 import { Card } from '../../../core/ui/Card';
 import { theme } from '../../../core/theme/theme';
-import { getGlobalStats } from '../data/statsRepo';
+import { getDailyActivity, getGlobalStats } from '../data/statsRepo';
 import { GiantTree } from '../components/GiantTree';
+import { Heatmap } from '../components/Heatmap';
 import { useHabits } from '../../habits/context/HabitsContext';
-import { clamp, dayIndexFromStart, phaseProgress, toLocalDateId } from '../../../core/utils/dateUtils';
+import { addDaysLocal, clamp, dayIndexFromStart, diffDaysLocal, phaseProgress, toLocalDateId } from '../../../core/utils/dateUtils';
 import { PlantProgress } from '../../habits/components/PlantProgress';
 
 const pct = (n) => `${Math.round(n * 100)}%`;
@@ -19,10 +20,17 @@ export function StatsScreen() {
   const isFocused = useIsFocused();
 
   const [stats, setStats] = useState(null);
+  const [daily, setDaily] = useState([]);
+
+  const windowDays = 84;
 
   const refresh = async () => {
     const s = await getGlobalStats();
     setStats(s);
+
+    const since = addDaysLocal(toLocalDateId(new Date()), -(windowDays - 1));
+    const rows = await getDailyActivity({ sinceDateId: since });
+    setDaily(rows);
   };
 
   useEffect(() => {
@@ -39,6 +47,49 @@ export function StatsScreen() {
   }, [stats]);
 
   const today = toLocalDateId(new Date());
+
+  const streaks = useMemo(() => {
+    const set = new Set();
+    const ids = [];
+    for (const d of daily || []) {
+      const v = Number(d?.total_validated || 0);
+      if (v > 0 && d?.date) {
+        const id = String(d.date);
+        set.add(id);
+        ids.push(id);
+      }
+    }
+
+    let current = 0;
+    for (let i = 0; i < 500; i++) {
+      const id = addDaysLocal(today, -i);
+      if (!set.has(id)) break;
+      current += 1;
+    }
+
+    ids.sort();
+    let best = 0;
+    let run = 0;
+    let prev = null;
+    for (const id of ids) {
+      if (!prev) {
+        run = 1;
+        best = Math.max(best, run);
+        prev = id;
+        continue;
+      }
+      const gap = diffDaysLocal(prev, id);
+      if (gap === 1) {
+        run += 1;
+      } else {
+        run = 1;
+      }
+      best = Math.max(best, run);
+      prev = id;
+    }
+
+    return { current, best };
+  }, [daily, today]);
 
   const habits = useMemo(() => {
     return (state.habits || []).map((h) => {
@@ -63,6 +114,29 @@ export function StatsScreen() {
           </Text>
           <View style={{ marginTop: 12 }}>
             <GiantTree progress={growth} />
+          </View>
+        </Card>
+
+        <View style={{ flexDirection: 'row', gap: 12 }}>
+          <Card style={{ flex: 1 }}>
+            <Text variant="muted">Streak actuel</Text>
+            <Text style={{ marginTop: 10, fontSize: 44, fontWeight: '800', color: theme.colors.text }}>{streaks.current}</Text>
+            <Text variant="muted">jours</Text>
+          </Card>
+          <Card style={{ flex: 1 }}>
+            <Text variant="muted">Meilleur streak</Text>
+            <Text style={{ marginTop: 10, fontSize: 44, fontWeight: '800', color: theme.colors.text }}>{streaks.best}</Text>
+            <Text variant="muted">jours</Text>
+          </Card>
+        </View>
+
+        <Card>
+          <Text variant="subtitle">Heatmap</Text>
+          <Text variant="muted" style={{ marginTop: 6 }}>
+            Validations par jour (toutes habitudes). Appuie sur un jour.
+          </Text>
+          <View style={{ marginTop: 12 }}>
+            <Heatmap days={daily} windowDays={windowDays} />
           </View>
         </Card>
 

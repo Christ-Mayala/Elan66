@@ -27,7 +27,7 @@ export function StartScreen({ navigation, onDone }) {
       <Animated.View style={{ opacity: fade, transform: [{ translateY: up }], flex: 1 }}>
         <View style={{ flex: 1, justifyContent: 'space-between' }}>
           <View style={{ paddingTop: 6 }}>
-            <Text variant="title">Elan66</Text>
+            <Text variant="display">Elan66</Text>
             <Text variant="muted" style={{ marginTop: 6 }}>
               Crée une habitude. Tiens 66 jours. Regarde ton arbre devenir géant.
             </Text>
