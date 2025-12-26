@@ -137,16 +137,6 @@ export function HomeScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  progressOuter: {
-    marginTop: 8,
-    height: 6,
-    width: 90,
-    borderRadius: 99,
-    backgroundColor: theme.colors.surface2,
-    borderWidth: 1,
-    borderColor: theme.colors.border,
-    overflow: 'hidden',
-  },
   sosPill: {
     flexDirection: 'row',
     gap: 8,
