@@ -8,7 +8,7 @@ import { useHabits } from '../context/HabitsContext';
 import { theme } from '../../../core/theme/theme';
 import { clamp, dayIndexFromStart, phaseProgress, toLocalDateId } from '../../../core/utils/dateUtils';
 import { SOSModal } from '../components/SOSModal';
-import { RouteProgress } from '../components/RouteProgress';
+import { PlantProgress } from '../components/PlantProgress';
 import { domainErrorMessageFr } from '../../../core/utils/domainErrors';
 
 export function HomeScreen({ navigation }) {
@@ -115,7 +115,7 @@ export function HomeScreen({ navigation }) {
                     {item.dayIndex}/{item.duration_days}
                   </Text>
                   <View style={{ width: '100%', marginTop: 8 }}>
-                    <RouteProgress dayIndex={item.dayIndex} durationDays={Number(item.duration_days)} />
+                    <PlantProgress dayIndex={item.dayIndex} durationDays={Number(item.duration_days)} size="s" />
                   </View>
                 </View>
               </View>

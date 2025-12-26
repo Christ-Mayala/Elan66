@@ -5,7 +5,7 @@ import { Text } from '../../../core/ui/Text';
 import { Card } from '../../../core/ui/Card';
 import { Button } from '../../../core/ui/Button';
 import { theme } from '../../../core/theme/theme';
-import { addDaysLocal, toLocalDateId } from '../../../core/utils/dateUtils';
+import { addDaysLocal, diffDaysLocal, toLocalDateId } from '../../../core/utils/dateUtils';
 import { getDiaryEntryByDate, listRecentDiaryEntries, upsertDiaryEntry } from '../data/diaryRepo';
 
 export function DiaryScreen() {
@@ -30,6 +30,7 @@ export function DiaryScreen() {
   }, [dateId]);
 
   const isToday = useMemo(() => dateId === today, [dateId, today]);
+  const isFuture = useMemo(() => diffDaysLocal(dateId, today) > 0, [dateId, today]);
 
   const onSave = async () => {
     try {
@@ -56,7 +57,7 @@ export function DiaryScreen() {
               <Text variant="subtitle">{dateId}</Text>
               <Text variant="muted">{isToday ? "Aujourd'hui" : ' '}</Text>
             </View>
-            <Pressable onPress={() => setDateId(addDaysLocal(dateId, 1))} style={styles.dateBtn}>
+            <Pressable disabled={isToday} onPress={() => setDateId(addDaysLocal(dateId, 1))} style={[styles.dateBtn, isToday ? styles.disabled : null]}>
               <Text>→</Text>
             </Pressable>
           </View>
@@ -68,10 +69,11 @@ export function DiaryScreen() {
             placeholderTextColor={theme.colors.textMuted}
             style={[styles.input, styles.multiline]}
             multiline
+            editable={!isFuture}
           />
 
           <View style={{ marginTop: 10 }}>
-            <Button title="Enregistrer" onPress={onSave} />
+            <Button title="Enregistrer" disabled={isFuture} onPress={onSave} />
           </View>
         </Card>
 
@@ -136,4 +138,5 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: theme.colors.border,
   },
+  disabled: { opacity: 0.35 },
 });

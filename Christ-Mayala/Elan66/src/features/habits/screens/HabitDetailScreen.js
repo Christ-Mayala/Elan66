@@ -11,7 +11,7 @@ import { theme } from '../../../core/theme/theme';
 import { domainErrorMessageFr } from '../../../core/utils/domainErrors';
 import { HabitTimeline } from '../components/HabitTimeline';
 import { DayPickerStrip } from '../components/DayPickerStrip';
-import { RouteProgress } from '../components/RouteProgress';
+import { PlantProgress } from '../components/PlantProgress';
 import { SOSModal } from '../components/SOSModal';
 
 export function HabitDetailScreen({ route, navigation }) {
@@ -186,8 +186,8 @@ export function HabitDetailScreen({ route, navigation }) {
               {phase.inPhase}/{phase.phaseTotal}{isTodaySelected ? '' : ` · Aujourd'hui ${todayDayIndex}`}
             </Text>
           </View>
-          <View style={{ marginTop: 10 }}>
-            <RouteProgress dayIndex={selectedDayIndex} durationDays={Number(habit.duration_days)} />
+          <View style={{ marginTop: 10, alignItems: 'center' }}>
+            <PlantProgress dayIndex={selectedDayIndex} durationDays={Number(habit.duration_days)} size="l" />
           </View>
         </Card>
 
