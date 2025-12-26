@@ -1,8 +1,11 @@
 import React from 'react';
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
+import { enableScreens } from 'react-native-screens';
 import { RootNavigator } from '../navigation/RootNavigator';
 import { theme } from '../../core/theme/theme';
 import { HabitsProvider } from '../../features/habits/context/HabitsContext';
+
+enableScreens(true);
 
 const navTheme = {
   ...DefaultTheme,
