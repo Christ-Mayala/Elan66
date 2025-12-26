@@ -15,10 +15,10 @@ export const theme = {
     xl: 28,
   },
   text: {
-    title: { fontSize: 24, fontWeight: '700', color: colors.text },
-    subtitle: { fontSize: 16, fontWeight: '600', color: colors.text },
+    title: { fontSize: 28, fontWeight: '800', color: colors.text, letterSpacing: -0.2 },
+    subtitle: { fontSize: 16, fontWeight: '700', color: colors.text },
     body: { fontSize: 15, fontWeight: '400', color: colors.text },
-    muted: { fontSize: 13, fontWeight: '400', color: colors.textMuted },
-    mono: { fontSize: 12, fontWeight: '600', color: colors.textMuted },
+    muted: { fontSize: 13, fontWeight: '500', color: colors.textMuted },
+    mono: { fontSize: 12, fontWeight: '700', color: colors.textMuted },
   },
 };

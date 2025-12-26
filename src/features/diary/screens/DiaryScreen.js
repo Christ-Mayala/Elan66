@@ -44,7 +44,7 @@ export function DiaryScreen() {
 
   return (
     <Screen>
-      <ScrollView contentContainerStyle={{ gap: 12, paddingBottom: 24 }} keyboardShouldPersistTaps="handled">
+      <ScrollView contentContainerStyle={{ gap: 12, paddingBottom: 110 }} keyboardShouldPersistTaps="handled">
         <Text variant="title">Journal</Text>
         <Text variant="muted">Court. Privé. Sans analyse automatique.</Text>
 

@@ -78,7 +78,7 @@ export function HomeScreen({ navigation }) {
       <FlatList
         data={items}
         keyExtractor={(it) => it.id}
-        contentContainerStyle={{ gap: 12, paddingBottom: 20 }}
+        contentContainerStyle={{ gap: 12, paddingBottom: 110 }}
         ListEmptyComponent={
           <Card>
             <Text variant="subtitle">Aucune habitude</Text>
