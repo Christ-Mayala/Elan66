@@ -3,6 +3,14 @@
     "name": "Elan66",
     "slug": "Elan66",
     "version": "1.0.0",
+    "plugins": [
+      [
+        "expo-dev-client",
+        {
+          "launchMode": "most-recent"
+        }
+      ]
+    ],
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",

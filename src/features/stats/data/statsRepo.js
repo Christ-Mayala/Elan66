@@ -25,6 +25,15 @@ export const getGlobalStats = async () => {
     [HabitStatus.archived]
   );
 
+  const planned = await db.getFirstAsync(
+    `
+    SELECT SUM(CASE WHEN h.duration_days IS NOT NULL THEN h.duration_days ELSE 0 END) AS total_days
+    FROM habits h
+    WHERE h.status != ?;
+  `,
+    [HabitStatus.archived]
+  );
+
   const sos = await db.getFirstAsync(
     `
     SELECT COUNT(*) as c
@@ -45,6 +54,7 @@ export const getGlobalStats = async () => {
   return {
     habitsActive: Number(habitsActive?.c || 0),
     habitsArchived: Number(habitsArchived?.c || 0),
+    totalDaysPlanned: Number(planned?.total_days || 0),
     totalValidated,
     success,
     resisted,
