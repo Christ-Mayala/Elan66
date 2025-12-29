@@ -84,14 +84,14 @@ export function HomeScreen({ navigation }) {
         <View style={styles.avatar} />
         <View style={{ flex: 1 }}>
           <Text variant="muted">Aujourd'hui</Text>
-          <Text variant="display">Discover</Text>
+          <Text variant="display">Découvrir</Text>
         </View>
 
         <Pressable onPress={() => navigation.navigate('Notes')} style={styles.iconBtn} hitSlop={10}>
           <Ionicons name="search" size={18} color={theme.colors.text} />
         </Pressable>
         <Pressable onPress={() => navigation.navigate('Settings')} style={styles.iconBtn} hitSlop={10}>
-          <Ionicons name="person-circle" size={20} color={theme.colors.textMuted} />
+          <Ionicons name="settings" size={18} color={theme.colors.textMuted} />
         </Pressable>
       </View>
 
@@ -165,7 +165,7 @@ export function HomeScreen({ navigation }) {
       <Card style={styles.heroCard}>
         <View style={styles.heroInner}>
           <View style={{ flex: 1 }}>
-            <Text variant="subtitle">What's new?</Text>
+            <Text variant="subtitle">Quoi de neuf ?</Text>
             <Text variant="muted" numberOfLines={3} style={{ marginTop: 6 }}>
               Une app hors-ligne, pensée pour tenir. Habitudes + journal. Zéro cloud.
             </Text>
