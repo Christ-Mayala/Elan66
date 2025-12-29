@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Alert, Pressable, ScrollView, StyleSheet, TextInput, View } from 'react-native';
-import { animateNext, enableLayoutAnimation } from '../../../core/utils/layoutAnim';
 import { Ionicons } from '@expo/vector-icons';
+import { animateNext, enableLayoutAnimation } from '../../../core/utils/layoutAnim';
 import { Screen } from '../../../core/ui/Screen';
 import { Card } from '../../../core/ui/Card';
 import { Text } from '../../../core/ui/Text';
@@ -10,7 +10,7 @@ import { createNote, listNotes, softDeleteNote, updateNote } from '../data/notes
 
 const previewText = (s) => {
   const t = String(s || '').replace(/\s+/g, ' ').trim();
-  return t.length > 140 ? `${t.slice(0, 140)}…` : t;
+  return t.length > 120 ? `${t.slice(0, 120)}…` : t;
 };
 
 export function NotesListScreen({ navigation }) {
@@ -64,47 +64,58 @@ export function NotesListScreen({ navigation }) {
   return (
     <Screen>
       <ScrollView contentContainerStyle={{ gap: 12, paddingBottom: 120 }} keyboardShouldPersistTaps="handled">
-        <View style={styles.header}>
+        <View style={styles.topBar}>
+          <View style={styles.avatar} />
           <View style={{ flex: 1 }}>
+            <Text variant="muted">Bloc-notes</Text>
             <Text variant="display">Journal</Text>
-            <Text variant="muted">Bloc-notes privé. Structure avec titres, listes et checklists.</Text>
           </View>
-          <Pressable onPress={onNew} style={styles.fabTop}>
-            <Ionicons name="add" size={22} color={theme.colors.black} />
+          <Pressable onPress={onNew} style={styles.iconBtn} hitSlop={10}>
+            <Ionicons name="add" size={20} color={theme.colors.black} />
           </Pressable>
         </View>
 
-        <Card>
-          <View style={{ gap: 10 }}>
-            <Text variant="subtitle">Rechercher</Text>
-            <TextInput
-              value={q}
-              onChangeText={setQ}
-              placeholder="Titre ou contenu…"
-              placeholderTextColor={theme.colors.textMuted}
-              style={styles.input}
-              autoCapitalize="none"
-              autoCorrect={false}
-            />
-          </View>
-        </Card>
+        <View style={styles.searchWrap}>
+          <Ionicons name="search" size={16} color={theme.colors.textMuted} />
+          <TextInput
+            value={q}
+            onChangeText={setQ}
+            placeholder="Rechercher…"
+            placeholderTextColor={theme.colors.textMuted}
+            style={styles.searchInput}
+            autoCapitalize="none"
+            autoCorrect={false}
+          />
+          {q ? (
+            <Pressable onPress={() => setQ('')} hitSlop={10}>
+              <Ionicons name="close" size={18} color={theme.colors.textMuted} />
+            </Pressable>
+          ) : null}
+        </View>
 
         {filtered.length === 0 ? (
           <Card>
             <Text variant="subtitle">Aucune note</Text>
             <Text variant="muted" style={{ marginTop: 6 }}>
-              Crée ta première note. Tu peux utiliser:
+              Crée ta première note. Structure avec titres, listes et checklists.
             </Text>
-            <Text style={{ marginTop: 10 }}>
-              • # Titre
-            </Text>
-            <Text>
-              • - Liste
-            </Text>
-            <Text>
-              • - [ ] Checklist
-            </Text>
-            <View style={{ marginTop: 12 }}>
+
+            <View style={{ marginTop: 12, gap: 8 }}>
+              <View style={styles.tipRow}>
+                <Text style={styles.tipKey}>#</Text>
+                <Text variant="muted">Titre</Text>
+              </View>
+              <View style={styles.tipRow}>
+                <Text style={styles.tipKey}>-</Text>
+                <Text variant="muted">Liste</Text>
+              </View>
+              <View style={styles.tipRow}>
+                <Text style={styles.tipKey}>- [ ]</Text>
+                <Text variant="muted">Checklist</Text>
+              </View>
+            </View>
+
+            <View style={{ marginTop: 14 }}>
               <Pressable onPress={onNew} style={styles.primaryInline}>
                 <Text variant="subtitle" style={{ color: theme.colors.black }}>
                   Créer une note
@@ -113,75 +124,130 @@ export function NotesListScreen({ navigation }) {
             </View>
           </Card>
         ) : (
-          filtered.map((n) => (
-            <Card key={n.id} style={styles.noteCard}>
-              <Pressable onPress={() => onOpen(n.id)}>
-                <View style={styles.noteTopRow}>
+          <View style={{ gap: 10 }}>
+            {filtered.map((n) => (
+              <Pressable key={n.id} onPress={() => onOpen(n.id)} style={styles.noteRow}>
+                <View style={[styles.noteIcon, n.pinned ? styles.noteIconPinned : null]}>
+                  <Ionicons name={n.pinned ? 'pin' : 'document-text'} size={18} color={n.pinned ? theme.colors.black : theme.colors.textMuted} />
+                </View>
+                <View style={{ flex: 1 }}>
                   <Text variant="subtitle" numberOfLines={1}>
                     {String(n.title || 'Sans titre')}
                   </Text>
-                  <View style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
-                    <Pressable onPress={() => onTogglePin(n)} hitSlop={10}>
-                      <Ionicons name={n.pinned ? 'pin' : 'pin-outline'} size={18} color={n.pinned ? theme.colors.accent : theme.colors.textMuted} />
-                    </Pressable>
-                    <Pressable onPress={() => onDelete(n)} hitSlop={10}>
-                      <Ionicons name="trash-outline" size={18} color={theme.colors.danger} />
-                    </Pressable>
-                  </View>
+                  <Text variant="muted" numberOfLines={1} style={{ marginTop: 4 }}>
+                    {previewText(n.body)}
+                  </Text>
+                  <Text variant="mono" style={{ marginTop: 8 }}>
+                    Modifié: {String(n.updated_at || '').slice(0, 16).replace('T', ' ')}
+                  </Text>
                 </View>
-                <Text variant="muted" style={{ marginTop: 6 }}>
-                  {previewText(n.body)}
-                </Text>
-                <Text variant="mono" style={{ marginTop: 10 }}>
-                  Modifié: {String(n.updated_at || '').slice(0, 16).replace('T', ' ')}
-                </Text>
-              </Pressable>
-            </Card>
-          ))
-        )}
 
-        <View style={{ height: 6 }} />
+                <View style={{ gap: 10, alignItems: 'flex-end', justifyContent: 'center' }}>
+                  <Pressable onPress={() => onTogglePin(n)} hitSlop={12}>
+                    <Ionicons name={n.pinned ? 'pin' : 'pin-outline'} size={18} color={n.pinned ? theme.colors.accent : theme.colors.textMuted} />
+                  </Pressable>
+                  <Pressable onPress={() => onDelete(n)} hitSlop={12}>
+                    <Ionicons name="trash-outline" size={18} color={theme.colors.danger} />
+                  </Pressable>
+                </View>
+              </Pressable>
+            ))}
+          </View>
+        )}
       </ScrollView>
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  header: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  fabTop: {
+  topBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  avatar: {
     width: 44,
     height: 44,
-    borderRadius: 14,
+    borderRadius: 22,
+    backgroundColor: theme.colors.surface2,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+  },
+  iconBtn: {
+    width: 44,
+    height: 44,
+    borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: theme.colors.accent,
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.10)',
+    ...theme.shadow.card,
   },
-  input: {
-    marginTop: 6,
-    backgroundColor: theme.colors.surface2,
-    borderRadius: theme.radius.m,
+  searchWrap: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    borderRadius: 999,
     borderWidth: 1,
     borderColor: theme.colors.border,
-    paddingHorizontal: 12,
-    paddingVertical: 12,
+    backgroundColor: theme.colors.surface,
+    ...theme.shadow.card,
+  },
+  searchInput: {
+    flex: 1,
     color: theme.colors.text,
+    paddingVertical: 0,
+  },
+  tipRow: {
+    flexDirection: 'row',
+    gap: 10,
+    alignItems: 'center',
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    borderRadius: theme.radius.l,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+    backgroundColor: theme.colors.surface2,
+  },
+  tipKey: {
+    width: 64,
+    textAlign: 'center',
+    color: theme.colors.text,
+    fontWeight: '800',
   },
   primaryInline: {
     paddingVertical: 12,
-    borderRadius: theme.radius.m,
+    borderRadius: theme.radius.l,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: theme.colors.accent,
   },
-  noteCard: { padding: 0 },
-  noteTopRow: {
+  noteRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    gap: 12,
     alignItems: 'center',
-    gap: 10,
-    paddingHorizontal: theme.spacing.m,
-    paddingTop: theme.spacing.m,
+    padding: 14,
+    borderRadius: theme.radius.xl,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+    backgroundColor: theme.colors.surface,
+    ...theme.shadow.card,
+  },
+  noteIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(241,245,249,0.06)',
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+  },
+  noteIconPinned: {
+    backgroundColor: theme.colors.accent,
+    borderColor: 'rgba(255,255,255,0.10)',
   },
 });
