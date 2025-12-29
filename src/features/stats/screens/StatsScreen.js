@@ -4,6 +4,7 @@ import { useIsFocused } from '@react-navigation/native';
 import { Screen } from '../../../core/ui/Screen';
 import { Text } from '../../../core/ui/Text';
 import { Card } from '../../../core/ui/Card';
+import { Chip } from '../../../core/ui/Chip';
 import { theme } from '../../../core/theme/theme';
 import { getDailyActivity, getGlobalStats } from '../data/statsRepo';
 import { GiantTree } from '../components/GiantTree';
@@ -21,8 +22,7 @@ export function StatsScreen() {
 
   const [stats, setStats] = useState(null);
   const [daily, setDaily] = useState([]);
-
-  const windowDays = 84;
+  const [windowDays, setWindowDays] = useState(84);
 
   const refresh = async () => {
     const s = await getGlobalStats();
@@ -36,7 +36,7 @@ export function StatsScreen() {
   useEffect(() => {
     if (!isFocused) return;
     refresh();
-  }, [isFocused]);
+  }, [isFocused, windowDays]);
 
   const rate = useMemo(() => (stats ? stats.successRate : 0), [stats]);
   const growth = useMemo(() => {
@@ -135,6 +135,13 @@ export function StatsScreen() {
           <Text variant="muted" style={{ marginTop: 6 }}>
             Validations par jour (toutes habitudes). Appuie sur un jour.
           </Text>
+
+          <View style={{ flexDirection: 'row', gap: 10, marginTop: 12 }}>
+            <Chip label="84j" selected={windowDays === 84} onPress={() => setWindowDays(84)} />
+            <Chip label="180j" selected={windowDays === 180} onPress={() => setWindowDays(180)} />
+            <Chip label="365j" selected={windowDays === 365} onPress={() => setWindowDays(365)} />
+          </View>
+
           <View style={{ marginTop: 12 }}>
             <Heatmap days={daily} windowDays={windowDays} />
           </View>
