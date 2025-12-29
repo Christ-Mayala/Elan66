@@ -9,9 +9,10 @@ export function Card({ children, style }) {
 const styles = StyleSheet.create({
   card: {
     backgroundColor: theme.colors.surface,
-    borderRadius: theme.radius.l,
+    borderRadius: theme.radius.xl,
     borderWidth: 1,
     borderColor: theme.colors.border,
     padding: theme.spacing.m,
+    ...theme.shadow.card,
   },
 });

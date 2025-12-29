@@ -1,12 +1,22 @@
-import * as Notifications from 'expo-notifications';
 import { getSetting, setSetting, SettingsKeys } from '../db/settingsRepo';
+import { isExpoGo } from '../utils/runtime';
 
 export const NOTIF_CATEGORY_DAILY = 'daily_checkin';
+
+let notifModPromise;
+const getNotifications = async () => {
+  if (isExpoGo()) return null;
+  if (!notifModPromise) notifModPromise = import('expo-notifications');
+  return notifModPromise;
+};
 
 const keyDaily = (habitId) => `notif:daily:${habitId}`;
 const keyNoTwoDays = (habitId, dateId) => `notif:noTwoDays:${habitId}:${dateId}`;
 
 export const configureNotifications = async () => {
+  const Notifications = await getNotifications();
+  if (!Notifications) return;
+
   await Notifications.setNotificationCategoryAsync(NOTIF_CATEGORY_DAILY, [
     {
       identifier: 'checkin_success',
@@ -35,6 +45,9 @@ export const configureNotifications = async () => {
 };
 
 export const requestNotifPermissions = async () => {
+  const Notifications = await getNotifications();
+  if (!Notifications) return { granted: false };
+
   const settings = await Notifications.getPermissionsAsync();
   if (settings.granted || settings.ios?.status === Notifications.IosAuthorizationStatus.PROVISIONAL) {
     return settings;
@@ -59,12 +72,17 @@ export const setDailyReminderTime = async (time) => {
 
 export const cancelScheduledById = async (id) => {
   if (!id) return;
+  const Notifications = await getNotifications();
+  if (!Notifications) return;
   try {
     await Notifications.cancelScheduledNotificationAsync(id);
   } catch {}
 };
 
 export const scheduleDailyCheckinForHabit = async ({ habitId, habitName, hour, minute }) => {
+  const Notifications = await getNotifications();
+  if (!Notifications) return null;
+
   const trigger = { hour, minute, repeats: true };
   const id = await Notifications.scheduleNotificationAsync({
     content: {
@@ -80,6 +98,9 @@ export const scheduleDailyCheckinForHabit = async ({ habitId, habitName, hour, m
 };
 
 export const syncDailyCheckinsForHabits = async (habits) => {
+  const Notifications = await getNotifications();
+  if (!Notifications) return;
+
   const { hour, minute } = await getDailyReminderTime();
 
   for (const h of habits) {
@@ -98,6 +119,9 @@ export const cancelAllForHabit = async (habitId) => {
 };
 
 export const scheduleNoTwoDaysNotification = async ({ habitId, habitName, date, hour, minute }) => {
+  const Notifications = await getNotifications();
+  if (!Notifications) return null;
+
   const fire = new Date(date.getFullYear(), date.getMonth(), date.getDate(), hour, minute, 0, 0);
   const id = await Notifications.scheduleNotificationAsync({
     content: {
@@ -117,4 +141,10 @@ export const scheduleNoTwoDaysForTomorrow = async ({ habitId, habitName, tomorro
   const id = await scheduleNoTwoDaysNotification({ habitId, habitName, date: fireDate, hour, minute });
   await setSetting(keyNoTwoDays(habitId, tomorrowDateId), id);
   return id;
+};
+
+export const addNotificationResponseReceivedListener = async (handler) => {
+  const Notifications = await getNotifications();
+  if (!Notifications) return { remove: () => {} };
+  return Notifications.addNotificationResponseReceivedListener(handler);
 };

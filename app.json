@@ -3,14 +3,21 @@
     "name": "Elan66",
     "slug": "Elan66",
     "version": "1.0.0",
+    "plugins": [
+      [
+        "expo-dev-client",
+        {
+          "launchMode": "most-recent"
+        }
+      ]
+    ],
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
-    "newArchEnabled": false,
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#0B0E13"
+      "backgroundColor": "#070A12"
     },
     "ios": {
       "supportsTablet": true
@@ -18,7 +25,7 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#0B0E13"
+        "backgroundColor": "#070A12"
       },
       "edgeToEdgeEnabled": false
     },
