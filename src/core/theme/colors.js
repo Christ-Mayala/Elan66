@@ -14,5 +14,5 @@ export const colors = {
   paperLine: 'rgba(148,163,184,0.14)',
   paperMargin: 'rgba(34,211,238,0.28)',
   white: '#FFFFFF',
-  black: '#000000',
+  black: '#030712',
 };

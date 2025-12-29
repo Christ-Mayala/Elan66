@@ -32,10 +32,12 @@ export const theme = {
     },
   },
   text: {
+    display: { fontSize: 34, fontWeight: '900', color: colors.text, letterSpacing: -0.6 },
     title: { fontSize: 30, fontWeight: '800', color: colors.text, letterSpacing: -0.4 },
     subtitle: { fontSize: 16, fontWeight: '700', color: colors.text, letterSpacing: -0.1 },
-    body: { fontSize: 15, fontWeight: '500', color: colors.text, letterSpacing: -0.1 },
-    muted: { fontSize: 13, fontWeight: '500', color: colors.textMuted },
+    body: { fontSize: 15, fontWeight: '500', color: colors.text, letterSpacing: -0.1, lineHeight: 22 },
+    muted: { fontSize: 13, fontWeight: '500', color: colors.textMuted, lineHeight: 18 },
     mono: { fontSize: 12, fontWeight: '700', color: colors.textMuted },
+    caption: { fontSize: 12, fontWeight: '600', color: colors.textMuted },
   },
 };

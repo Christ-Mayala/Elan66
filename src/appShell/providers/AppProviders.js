@@ -1,5 +1,6 @@
 import React from 'react';
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { enableScreens } from 'react-native-screens';
 import { RootNavigator } from '../navigation/RootNavigator';
 import { theme } from '../../core/theme/theme';
@@ -21,10 +22,12 @@ const navTheme = {
 
 export function AppProviders() {
   return (
-    <HabitsProvider>
-      <NavigationContainer theme={navTheme}>
-        <RootNavigator />
-      </NavigationContainer>
-    </HabitsProvider>
+    <SafeAreaProvider>
+      <HabitsProvider>
+        <NavigationContainer theme={navTheme}>
+          <RootNavigator />
+        </NavigationContainer>
+      </HabitsProvider>
+    </SafeAreaProvider>
   );
 }
