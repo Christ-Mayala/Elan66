@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { forwardRef, useMemo } from 'react';
 import { StyleSheet, TextInput, View } from 'react-native';
 import { theme } from '../theme/theme';
 
@@ -7,17 +7,20 @@ const TOP = 18;
 const LINE_COUNT = 48;
 const MARGIN_X = 46;
 
-export function NotepadInput({
-  value,
-  onChangeText,
-  placeholder,
-  editable = true,
-  minHeight = 180,
-  style,
-  inputStyle,
-  placeholderTextColor = theme.colors.textMuted,
-  ...props
-}) {
+export const NotepadInput = forwardRef(function NotepadInput(
+  {
+    value,
+    onChangeText,
+    placeholder,
+    editable = true,
+    minHeight = 180,
+    style,
+    inputStyle,
+    placeholderTextColor = theme.colors.textMuted,
+    ...props
+  },
+  ref
+) {
   const lines = useMemo(() => Array.from({ length: LINE_COUNT }, (_, i) => i), []);
 
   return (
@@ -31,6 +34,7 @@ export function NotepadInput({
         </View>
 
         <TextInput
+          ref={ref}
           value={value}
           onChangeText={onChangeText}
           placeholder={placeholder}
@@ -44,7 +48,7 @@ export function NotepadInput({
       </View>
     </View>
   );
-}
+});
 
 const styles = StyleSheet.create({
   outer: {

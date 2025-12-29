@@ -8,6 +8,7 @@ import { theme } from '../../../core/theme/theme';
 import { getNoteById, softDeleteNote, updateNote } from '../data/notesRepo';
 import { NotePreview } from '../components/NotePreview';
 import { Segmented } from '../components/segmented';
+import { NotepadInput } from '../../../core/ui/NotepadInput';
 
 const insertAtCursor = (value, selection, insert) => {
   const start = selection?.start ?? value.length;
@@ -120,16 +121,16 @@ export function NoteEditorScreen({ navigation, route }) {
     <Screen>
       <ScrollView contentContainerStyle={{ gap: 12, paddingBottom: 120 }} keyboardShouldPersistTaps="handled">
         <View style={styles.topbar}>
-          <Pressable onPress={onBack} style={styles.iconBtn}>
+          <Pressable onPress={onBack} style={styles.iconBtn} hitSlop={10}>
             <Ionicons name="chevron-back" size={20} color={theme.colors.text} />
           </Pressable>
           <Text variant="subtitle" numberOfLines={1} style={{ flex: 1 }}>
             {title.trim() ? title.trim() : 'Note'}
           </Text>
-          <Pressable onPress={() => setPinned((p) => (p ? 0 : 1))} style={styles.iconBtn}>
+          <Pressable onPress={() => setPinned((p) => (p ? 0 : 1))} style={styles.iconBtn} hitSlop={10}>
             <Ionicons name={pinned ? 'pin' : 'pin-outline'} size={18} color={pinned ? theme.colors.accent : theme.colors.textMuted} />
           </Pressable>
-          <Pressable onPress={() => save()} style={styles.primaryBtn}>
+          <Pressable onPress={() => save()} style={styles.primaryBtn} hitSlop={10}>
             <Ionicons name="save" size={18} color={theme.colors.black} />
             <Text variant="subtitle" style={{ color: theme.colors.black }}>
               OK
@@ -138,7 +139,7 @@ export function NoteEditorScreen({ navigation, route }) {
         </View>
 
         <Card>
-          <Text variant="muted">Titre</Text>
+          <Text variant="subtitle">Titre</Text>
           <TextInput
             value={title}
             onChangeText={setTitle}
@@ -170,20 +171,18 @@ export function NoteEditorScreen({ navigation, route }) {
             </View>
           </View>
           <View style={{ padding: theme.spacing.m, paddingTop: 12 }}>
-            <Text variant="muted">Contenu</Text>
+            <Text variant="subtitle">Contenu</Text>
             {mode === 'edit' ? (
-              <TextInput
+              <NotepadInput
                 ref={bodyRef}
                 value={body}
                 onChangeText={setBody}
                 onSelectionChange={(e) => setSel(e.nativeEvent.selection)}
                 selection={sel}
                 placeholder="Écris ici…"
-                placeholderTextColor={theme.colors.textMuted}
-                style={[styles.input, styles.body]}
-                multiline
-                textAlignVertical="top"
                 autoCorrect
+                minHeight={260}
+                style={{ marginTop: 12, ...theme.shadow.card }}
               />
             ) : (
               <View style={[styles.preview, styles.body]}>
@@ -195,8 +194,8 @@ export function NoteEditorScreen({ navigation, route }) {
 
         <Card>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Text variant="muted">Actions</Text>
-            <Pressable onPress={onDelete} style={styles.dangerBtn}>
+            <Text variant="subtitle">Actions</Text>
+            <Pressable onPress={onDelete} style={styles.dangerBtn} hitSlop={10}>
               <Ionicons name="trash" size={18} color={theme.colors.text} />
               <Text variant="subtitle">Supprimer</Text>
             </Pressable>
@@ -209,7 +208,7 @@ export function NoteEditorScreen({ navigation, route }) {
 
 function ToolButton({ label, onPress }) {
   return (
-    <Pressable onPress={onPress} style={styles.toolBtn}>
+    <Pressable onPress={onPress} style={styles.toolBtn} hitSlop={10}>
       <Text variant="mono" style={{ color: theme.colors.text }}>
         {label}
       </Text>
@@ -249,9 +248,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     flexDirection: 'row',
     gap: 8,
-    backgroundColor: 'rgba(251,113,133,0.16)',
+    backgroundColor: 'rgba(239,68,68,0.14)',
     borderWidth: 1,
-    borderColor: 'rgba(251,113,133,0.35)',
+    borderColor: 'rgba(239,68,68,0.32)',
   },
   toolbar: {
     padding: theme.spacing.m,
@@ -259,22 +258,17 @@ const styles = StyleSheet.create({
     borderBottomColor: theme.colors.border,
     backgroundColor: 'rgba(15,26,51,0.45)',
   },
-  toolsRow: {
-    flexDirection: 'row',
-    gap: 8,
-  },
+  toolsRow: { flexDirection: 'row', gap: 8, flexWrap: 'wrap' },
   toolBtn: {
-    height: 36,
+    paddingVertical: 8,
     paddingHorizontal: 10,
     borderRadius: 12,
     borderWidth: 1,
     borderColor: theme.colors.border,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: theme.colors.surface2,
+    backgroundColor: 'rgba(255,255,255,0.04)',
   },
   input: {
-    marginTop: 6,
+    marginTop: 10,
     backgroundColor: theme.colors.surface2,
     borderRadius: theme.radius.m,
     borderWidth: 1,
@@ -283,17 +277,14 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     color: theme.colors.text,
   },
-  body: {
-    minHeight: 260,
-    lineHeight: 20,
-  },
   preview: {
-    marginTop: 6,
-    backgroundColor: theme.colors.surface2,
-    borderRadius: theme.radius.m,
+    marginTop: 12,
+    borderRadius: theme.radius.xl,
     borderWidth: 1,
     borderColor: theme.colors.border,
-    paddingHorizontal: 12,
-    paddingVertical: 12,
+    backgroundColor: theme.colors.surface2,
+    padding: theme.spacing.m,
+    ...theme.shadow.card,
   },
+  body: { minHeight: 260 },
 });

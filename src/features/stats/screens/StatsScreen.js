@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { ScrollView, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useIsFocused } from '@react-navigation/native';
 import { Screen } from '../../../core/ui/Screen';
 import { Text } from '../../../core/ui/Text';
@@ -101,37 +102,80 @@ export function StatsScreen() {
 
   return (
     <Screen>
-      <ScrollView contentContainerStyle={{ gap: 12, paddingBottom: 110 }}>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' }}>
-          <Text variant="title">Statistiques</Text>
-          <Text variant="mono">Croissance: {pct(growth)}</Text>
+      <ScrollView contentContainerStyle={{ gap: 12, paddingBottom: 120 }} keyboardShouldPersistTaps="handled">
+        <View style={styles.topBar}>
+          <View style={styles.avatar} />
+          <View style={{ flex: 1 }}>
+            <Text variant="muted">Progression</Text>
+            <Text variant="display">Statistiques</Text>
+          </View>
+          <Pressable onPress={refresh} style={styles.iconBtn} hitSlop={10}>
+            <Ionicons name="refresh" size={18} color={theme.colors.text} />
+          </Pressable>
         </View>
 
-        <Card>
-          <Text variant="subtitle">Ton arbre</Text>
-          <Text variant="muted" style={{ marginTop: 6 }}>
-            Plus tu valides de jours, plus l’arbre prend forme. À 100%, il devient un arbre géant.
-          </Text>
-          <View style={{ marginTop: 12 }}>
+        <Card style={styles.heroCard}>
+          <View style={styles.heroInner}>
+            <View style={{ flex: 1 }}>
+              <Text variant="subtitle">Arbre d’évolution</Text>
+              <Text variant="muted" style={{ marginTop: 6 }}>
+                À mesure que tu valides, l’arbre grandit et se densifie.
+              </Text>
+
+              <View style={{ marginTop: 14, flexDirection: 'row', gap: 10 }}>
+                <View style={styles.badge}>
+                  <Text variant="mono">Croissance {pct(growth)}</Text>
+                </View>
+                <View style={styles.badge}>
+                  <Text variant="mono">Taux {pct(rate)}</Text>
+                </View>
+              </View>
+            </View>
+
+            <View style={{ width: 160, alignItems: 'flex-end', justifyContent: 'center' }}>
+              <Text style={styles.bigNumber}>{streaks.current}</Text>
+              <Text variant="muted">streak actuel</Text>
+            </View>
+          </View>
+
+          <View style={{ marginTop: 14 }}>
             <GiantTree progress={growth} />
           </View>
         </Card>
 
         <View style={{ flexDirection: 'row', gap: 12 }}>
-          <Card style={{ flex: 1 }}>
-            <Text variant="muted">Streak actuel</Text>
-            <Text style={{ marginTop: 10, fontSize: 44, fontWeight: '800', color: theme.colors.text }}>{streaks.current}</Text>
-            <Text variant="muted">jours</Text>
+          <Card style={{ flex: 1, padding: 0 }}>
+            <View style={styles.statCard}>
+              <View style={styles.statTop}>
+                <View style={[styles.statIcon, { backgroundColor: 'rgba(34,211,238,0.14)' }]}>
+                  <Ionicons name="flame" size={18} color={theme.colors.accent2} />
+                </View>
+                <Text variant="muted">Streak actuel</Text>
+              </View>
+              <Text style={styles.statValue}>{streaks.current}</Text>
+              <Text variant="muted">jours</Text>
+            </View>
           </Card>
-          <Card style={{ flex: 1 }}>
-            <Text variant="muted">Meilleur streak</Text>
-            <Text style={{ marginTop: 10, fontSize: 44, fontWeight: '800', color: theme.colors.text }}>{streaks.best}</Text>
-            <Text variant="muted">jours</Text>
+
+          <Card style={{ flex: 1, padding: 0 }}>
+            <View style={styles.statCard}>
+              <View style={styles.statTop}>
+                <View style={[styles.statIcon, { backgroundColor: 'rgba(139,92,246,0.14)' }]}>
+                  <Ionicons name="trophy" size={18} color={theme.colors.accent} />
+                </View>
+                <Text variant="muted">Meilleur streak</Text>
+              </View>
+              <Text style={styles.statValue}>{streaks.best}</Text>
+              <Text variant="muted">jours</Text>
+            </View>
           </Card>
         </View>
 
         <Card>
-          <Text variant="subtitle">Heatmap</Text>
+          <View style={styles.sectionRow}>
+            <Text variant="subtitle">Activité</Text>
+            <Text variant="mono">{windowDays} jours</Text>
+          </View>
           <Text variant="muted" style={{ marginTop: 6 }}>
             Validations par jour (toutes habitudes). Appuie sur un jour.
           </Text>
@@ -141,36 +185,32 @@ export function StatsScreen() {
         </Card>
 
         <Card>
-          <Text variant="subtitle">Taux de réussite</Text>
-          <Text variant="muted" style={{ marginTop: 6 }}>
-            (✅ + ⚠️) / (✅ + ⚠️ + ❌) — hors habitudes archivées
-          </Text>
-
-          <View style={{ marginTop: 12 }}>
-            <Text style={{ fontSize: 44, fontWeight: '800', color: theme.colors.text }}>{pct(rate)}</Text>
-            <View
-              style={{
-                marginTop: 10,
-                height: 10,
-                borderRadius: 99,
-                backgroundColor: 'rgba(15,26,51,0.70)',
-                borderWidth: 1,
-                borderColor: theme.colors.border,
-                overflow: 'hidden',
-              }}
-            >
-              <View style={{ height: '100%', width: pct(rate), backgroundColor: theme.colors.accent }} />
-            </View>
-          </View>
-        </Card>
-
-        <Card>
           <Text variant="subtitle">Résumé</Text>
-          <View style={{ marginTop: 10, gap: 6 }}>
-            <Text>Habitudes actives/terminées : {stats?.habitsActive ?? '—'}</Text>
-            <Text>Habitudes archivées : {stats?.habitsArchived ?? '—'}</Text>
-            <Text>Jours validés : {stats?.totalValidated ?? '—'} / {stats?.totalDaysPlanned ?? '—'}</Text>
-            <Text>✅ {stats?.success ?? '—'} · ⚠️ {stats?.resisted ?? '—'} · ❌ {stats?.fail ?? '—'}</Text>
+          <View style={{ marginTop: 12, gap: 8 }}>
+            <View style={styles.rowItem}>
+              <Text variant="muted">Habitudes actives / terminées</Text>
+              <Text>{stats?.habitsActive ?? '—'}</Text>
+            </View>
+            <View style={styles.rowItem}>
+              <Text variant="muted">Habitudes archivées</Text>
+              <Text>{stats?.habitsArchived ?? '—'}</Text>
+            </View>
+            <View style={styles.rowItem}>
+              <Text variant="muted">Jours validés</Text>
+              <Text>
+                {stats?.totalValidated ?? '—'} / {stats?.totalDaysPlanned ?? '—'}
+              </Text>
+            </View>
+            <View style={styles.rowItem}>
+              <Text variant="muted">Détail</Text>
+              <Text>
+                ✅ {stats?.success ?? '—'} · ⚠️ {stats?.resisted ?? '—'} · ❌ {stats?.fail ?? '—'}
+              </Text>
+            </View>
+            <View style={styles.rowItem}>
+              <Text variant="muted">SOS (vies sauvées)</Text>
+              <Text>{stats?.savedLives ?? 0}</Text>
+            </View>
           </View>
         </Card>
 
@@ -184,10 +224,14 @@ export function StatsScreen() {
               <Text variant="muted">—</Text>
             ) : (
               habits.map((h) => (
-                <View key={h.id} style={{ flexDirection: 'row', justifyContent: 'space-between', gap: 12, alignItems: 'center' }}>
+                <View key={h.id} style={styles.habitRow}>
                   <View style={{ flex: 1 }}>
-                    <Text variant="subtitle" numberOfLines={1}>{h.name}</Text>
-                    <Text variant="muted" style={{ marginTop: 2 }}>Phase {h.phase} · Jour {h.dayIndex}/{h.duration_days}</Text>
+                    <Text variant="subtitle" numberOfLines={1}>
+                      {h.name}
+                    </Text>
+                    <Text variant="muted" style={{ marginTop: 2 }}>
+                      Phase {h.phase} · Jour {h.dayIndex}/{h.duration_days}
+                    </Text>
                   </View>
                   <View style={{ width: 160 }}>
                     <PlantProgress dayIndex={h.dayIndex} durationDays={Number(h.duration_days)} size="m" />
@@ -197,15 +241,85 @@ export function StatsScreen() {
             )}
           </View>
         </Card>
-
-        <Card>
-          <Text variant="subtitle">Vies sauvées</Text>
-          <Text variant="muted" style={{ marginTop: 6 }}>
-            Jours où le bouton SOS a été utilisé (1/jour/habitude).
-          </Text>
-          <Text style={{ marginTop: 12, fontSize: 44, fontWeight: '800', color: theme.colors.text }}>{stats?.savedLives ?? 0}</Text>
-        </Card>
       </ScrollView>
     </Screen>
   );
 }
+
+const styles = StyleSheet.create({
+  topBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  avatar: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: theme.colors.surface2,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+  },
+  iconBtn: {
+    width: 38,
+    height: 38,
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(255,255,255,0.04)',
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+  },
+  heroCard: { padding: 0, overflow: 'hidden' },
+  heroInner: {
+    padding: theme.spacing.m,
+    flexDirection: 'row',
+    gap: 12,
+    alignItems: 'center',
+  },
+  badge: {
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+    backgroundColor: 'rgba(255,255,255,0.04)',
+  },
+  bigNumber: { fontSize: 44, fontWeight: '900', color: theme.colors.text, letterSpacing: -0.6 },
+  statCard: { padding: theme.spacing.m },
+  statTop: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  statIcon: {
+    width: 34,
+    height: 34,
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+  },
+  statValue: { marginTop: 10, fontSize: 44, fontWeight: '900', color: theme.colors.text, letterSpacing: -0.6 },
+  sectionRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  rowItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    gap: 12,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    borderRadius: theme.radius.l,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+    backgroundColor: theme.colors.surface2,
+  },
+  habitRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: 12,
+    alignItems: 'center',
+    padding: 14,
+    borderRadius: theme.radius.xl,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+    backgroundColor: theme.colors.surface2,
+  },
+});
