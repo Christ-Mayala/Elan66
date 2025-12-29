@@ -12,5 +12,5 @@ export function Screen({ children, style }) {
 
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: theme.colors.bg },
-  inner: { flex: 1, padding: theme.spacing.m },
+  inner: { flex: 1, paddingHorizontal: theme.spacing.l, paddingTop: theme.spacing.l, paddingBottom: 96 },
 });

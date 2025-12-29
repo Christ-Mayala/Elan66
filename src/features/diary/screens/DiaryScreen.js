@@ -1,9 +1,10 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Alert, Pressable, ScrollView, StyleSheet, TextInput, View } from 'react-native';
+import { Alert, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { Screen } from '../../../core/ui/Screen';
 import { Text } from '../../../core/ui/Text';
 import { Card } from '../../../core/ui/Card';
 import { Button } from '../../../core/ui/Button';
+import { NotepadInput } from '../../../core/ui/NotepadInput';
 import { theme } from '../../../core/theme/theme';
 import { addDaysLocal, diffDaysLocal, toLocalDateId } from '../../../core/utils/dateUtils';
 import { getDiaryEntryByDate, listRecentDiaryEntries, upsertDiaryEntry } from '../data/diaryRepo';
@@ -62,14 +63,13 @@ export function DiaryScreen() {
             </Pressable>
           </View>
 
-          <TextInput
+          <NotepadInput
             value={text}
             onChangeText={setText}
             placeholder="Écrire sans filtre. Quelques lignes suffisent."
-            placeholderTextColor={theme.colors.textMuted}
-            style={[styles.input, styles.multiline]}
-            multiline
             editable={!isFuture}
+            minHeight={220}
+            style={{ marginTop: 12, ...theme.shadow.card }}
           />
 
           <View style={{ marginTop: 10 }}>
@@ -102,20 +102,6 @@ export function DiaryScreen() {
 }
 
 const styles = StyleSheet.create({
-  input: {
-    marginTop: 10,
-    backgroundColor: theme.colors.surface2,
-    borderRadius: theme.radius.m,
-    borderWidth: 1,
-    borderColor: theme.colors.border,
-    paddingHorizontal: 12,
-    paddingVertical: 12,
-    color: theme.colors.text,
-  },
-  multiline: {
-    minHeight: 170,
-    textAlignVertical: 'top',
-  },
   dateRow: {
     flexDirection: 'row',
     alignItems: 'center',

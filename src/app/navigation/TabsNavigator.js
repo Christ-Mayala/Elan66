@@ -13,9 +13,21 @@ export function TabsNavigator() {
     <Tab.Navigator
       screenOptions={{
         headerShown: false,
+        tabBarHideOnKeyboard: true,
         tabBarStyle: {
-          backgroundColor: theme.colors.surface2,
-          borderTopColor: theme.colors.border,
+          backgroundColor: theme.colors.surface,
+          borderTopWidth: 0,
+          position: 'absolute',
+          left: theme.spacing.l,
+          right: theme.spacing.l,
+          bottom: 14,
+          height: 70,
+          paddingTop: 10,
+          paddingBottom: 14,
+          borderRadius: 999,
+          borderWidth: 1,
+          borderColor: theme.colors.border,
+          ...theme.shadow.floating,
         },
         tabBarActiveTintColor: theme.colors.text,
         tabBarInactiveTintColor: theme.colors.textMuted,
