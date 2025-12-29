@@ -1,6 +1,8 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Alert, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { Screen } from '../../../core/ui/Screen';
+import { Enter } from '../../../core/ui/Enter';
 import { Text } from '../../../core/ui/Text';
 import { Card } from '../../../core/ui/Card';
 import { Button } from '../../../core/ui/Button';
@@ -45,8 +47,18 @@ export function DiaryScreen() {
 
   return (
     <Screen>
-      <ScrollView contentContainerStyle={{ gap: 12, paddingBottom: 110 }} keyboardShouldPersistTaps="handled">
-        <Text variant="title">Journal</Text>
+      <Enter style={{ flex: 1 }}>
+        <ScrollView contentContainerStyle={{ gap: 12, paddingBottom: 120 }} keyboardShouldPersistTaps="handled">
+        <View style={styles.topBar}>
+          <View style={styles.avatar}>
+            <Ionicons name="book" size={18} color={theme.colors.textMuted} />
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text variant="muted">Écriture</Text>
+            <Text variant="display">Journal</Text>
+          </View>
+        </View>
+
         <Text variant="muted">Court. Privé. Sans analyse automatique.</Text>
 
         <Card>
@@ -96,12 +108,28 @@ export function DiaryScreen() {
             )}
           </View>
         </Card>
-      </ScrollView>
+        </ScrollView>
+      </Enter>
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
+  topBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  avatar: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: theme.colors.surface2,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   dateRow: {
     flexDirection: 'row',
     alignItems: 'center',

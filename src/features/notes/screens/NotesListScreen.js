@@ -3,6 +3,7 @@ import { Alert, Pressable, ScrollView, StyleSheet, TextInput, View } from 'react
 import { Ionicons } from '@expo/vector-icons';
 import { animateNext, enableLayoutAnimation } from '../../../core/utils/layoutAnim';
 import { Screen } from '../../../core/ui/Screen';
+import { Enter } from '../../../core/ui/Enter';
 import { Card } from '../../../core/ui/Card';
 import { Text } from '../../../core/ui/Text';
 import { theme } from '../../../core/theme/theme';
@@ -63,7 +64,8 @@ export function NotesListScreen({ navigation }) {
 
   return (
     <Screen>
-      <ScrollView contentContainerStyle={{ gap: 12, paddingBottom: 120 }} keyboardShouldPersistTaps="handled">
+      <Enter style={{ flex: 1 }}>
+        <ScrollView contentContainerStyle={{ gap: 12, paddingBottom: 120 }} keyboardShouldPersistTaps="handled">
         <View style={styles.topBar}>
           <View style={styles.avatar} />
           <View style={{ flex: 1 }}>
@@ -154,7 +156,8 @@ export function NotesListScreen({ navigation }) {
             ))}
           </View>
         )}
-      </ScrollView>
+        </ScrollView>
+      </Enter>
     </Screen>
   );
 }

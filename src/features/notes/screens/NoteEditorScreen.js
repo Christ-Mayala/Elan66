@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Alert, Keyboard, Pressable, ScrollView, StyleSheet, TextInput, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Screen } from '../../../core/ui/Screen';
+import { Enter } from '../../../core/ui/Enter';
 import { Card } from '../../../core/ui/Card';
 import { Text } from '../../../core/ui/Text';
 import { theme } from '../../../core/theme/theme';
@@ -119,7 +120,8 @@ export function NoteEditorScreen({ navigation, route }) {
 
   return (
     <Screen>
-      <ScrollView contentContainerStyle={{ gap: 12, paddingBottom: 120 }} keyboardShouldPersistTaps="handled">
+      <Enter style={{ flex: 1 }}>
+        <ScrollView contentContainerStyle={{ gap: 12, paddingBottom: 120 }} keyboardShouldPersistTaps="handled">
         <View style={styles.topbar}>
           <Pressable onPress={onBack} style={styles.iconBtn} hitSlop={10}>
             <Ionicons name="chevron-back" size={20} color={theme.colors.text} />
@@ -201,7 +203,8 @@ export function NoteEditorScreen({ navigation, route }) {
             </Pressable>
           </View>
         </Card>
-      </ScrollView>
+        </ScrollView>
+      </Enter>
     </Screen>
   );
 }

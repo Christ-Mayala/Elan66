@@ -3,6 +3,7 @@ import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useIsFocused } from '@react-navigation/native';
 import { Screen } from '../../../core/ui/Screen';
+import { Enter } from '../../../core/ui/Enter';
 import { Text } from '../../../core/ui/Text';
 import { Card } from '../../../core/ui/Card';
 import { theme } from '../../../core/theme/theme';
@@ -102,7 +103,8 @@ export function StatsScreen() {
 
   return (
     <Screen>
-      <ScrollView contentContainerStyle={{ gap: 12, paddingBottom: 120 }} keyboardShouldPersistTaps="handled">
+      <Enter style={{ flex: 1 }}>
+        <ScrollView contentContainerStyle={{ gap: 12, paddingBottom: 120 }} keyboardShouldPersistTaps="handled">
         <View style={styles.topBar}>
           <View style={styles.avatar} />
           <View style={{ flex: 1 }}>
@@ -241,7 +243,8 @@ export function StatsScreen() {
             )}
           </View>
         </Card>
-      </ScrollView>
+        </ScrollView>
+      </Enter>
     </Screen>
   );
 }

@@ -1,6 +1,8 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Alert, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { Screen } from '../../../core/ui/Screen';
+import { Enter } from '../../../core/ui/Enter';
 import { Text } from '../../../core/ui/Text';
 import { Card } from '../../../core/ui/Card';
 import { Button } from '../../../core/ui/Button';
@@ -175,7 +177,26 @@ export function HabitDetailScreen({ route, navigation }) {
 
   return (
     <Screen>
-      <ScrollView contentContainerStyle={{ gap: 12, paddingBottom: 120 }} keyboardShouldPersistTaps="handled">
+      <Enter style={{ flex: 1 }}>
+        <ScrollView contentContainerStyle={{ gap: 12, paddingBottom: 120 }} keyboardShouldPersistTaps="handled">
+        <View style={styles.topBar}>
+          <Pressable onPress={() => navigation.goBack()} style={styles.iconBtn} hitSlop={10}>
+            <Ionicons name="chevron-back" size={20} color={theme.colors.text} />
+          </Pressable>
+          <View style={{ flex: 1 }}>
+            <Text variant="muted">Habitude</Text>
+            <Text variant="display" numberOfLines={1}>
+              {habit.name}
+            </Text>
+          </View>
+          <Pressable onPress={onArchive} style={styles.iconBtn} hitSlop={10}>
+            <Ionicons name="archive" size={18} color={theme.colors.textMuted} />
+          </Pressable>
+          <Pressable onPress={onDelete} style={styles.iconBtn} hitSlop={10}>
+            <Ionicons name="trash-outline" size={18} color={theme.colors.danger} />
+          </Pressable>
+        </View>
+
         <Card>
           <Text variant="subtitle">Phase {phase.phase} — {phaseInfo.name}</Text>
           <Text variant="muted" style={{ marginTop: 6 }}>{phaseMessage}</Text>
@@ -273,7 +294,8 @@ export function HabitDetailScreen({ route, navigation }) {
             </Pressable>
           </View>
         </Card>
-      </ScrollView>
+        </ScrollView>
+      </Enter>
 
       <SOSModal
         visible={sosVisible}
@@ -288,11 +310,27 @@ export function HabitDetailScreen({ route, navigation }) {
 }
 
 const styles = StyleSheet.create({
-  linkRow: {
-    paddingVertical: 10,
-    paddingHorizontal: 12,
-    borderRadius: theme.radius.m,
+  topBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  iconBtn: {
+    width: 40,
+    height: 40,
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
     borderWidth: 1,
     borderColor: theme.colors.border,
+    backgroundColor: 'rgba(255,255,255,0.04)',
+  },
+  linkRow: {
+    paddingVertical: 12,
+    paddingHorizontal: 12,
+    borderRadius: theme.radius.xl,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+    backgroundColor: theme.colors.surface2,
   },
 });
