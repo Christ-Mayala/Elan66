@@ -5,7 +5,8 @@ let enabled = false;
 export const enableLayoutAnimation = () => {
   if (enabled) return;
   enabled = true;
-  if (Platform.OS === 'android') {
+  const isNewArch = Boolean(global?.nativeFabricUIManager);
+  if (Platform.OS === 'android' && !isNewArch) {
     UIManager.setLayoutAnimationEnabledExperimental?.(true);
   }
 };

@@ -163,7 +163,7 @@ export function SettingsScreen() {
 
             <Pressable onPress={onImport} style={[styles.rowLink, styles.rowDanger]}>
               <View style={[styles.rowIcon, { backgroundColor: 'rgba(239,68,68,0.14)' }]}>
-                <Ionicons name="upload" size={18} color={theme.colors.danger} />
+                <Ionicons name="cloud-upload-outline" size={18} color={theme.colors.danger} />
               </View>
               <View style={{ flex: 1 }}>
                 <Text variant="subtitle">Importer</Text>
