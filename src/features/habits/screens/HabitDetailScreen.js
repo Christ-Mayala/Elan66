@@ -174,6 +174,14 @@ export function HabitDetailScreen({ route, navigation }) {
     return data.logs.find((l) => l.date === selectedDateId) || null;
   }, [data.logs, selectedDateId]);
 
+  const notedLogs = useMemo(() => {
+    if (!habit) return [];
+    return (data.logs || [])
+      .filter((l) => String(l?.note || '').trim())
+      .slice()
+      .sort((a, b) => String(b?.date || '').localeCompare(String(a?.date || '')));
+  }, [data.logs, habit]);
+
   const phase = useMemo(() => phaseProgress(selectedDayIndex), [selectedDayIndex]);
   const todayPhase = useMemo(() => phaseProgress(todayDayIndex), [todayDayIndex]);
 
@@ -375,7 +383,7 @@ export function HabitDetailScreen({ route, navigation }) {
 
   // Onglet "Aperçu"
   const OverviewTab = () => (
-      <ScrollView style={styles.tabContent} showsVerticalScrollIndicator={false}>
+      <ScrollView style={styles.tabContent} contentContainerStyle={styles.tabContainer} showsVerticalScrollIndicator={false}>
         <Card style={styles.headerCard}>
           <LinearGradient
               colors={['rgba(139,92,246,0.08)', 'rgba(34,211,238,0.04)']}
@@ -585,7 +593,7 @@ export function HabitDetailScreen({ route, navigation }) {
 
   // Onglet "Journal"
   const JournalTab = () => (
-      <ScrollView style={styles.tabContent} showsVerticalScrollIndicator={false}>
+      <ScrollView style={styles.tabContent} contentContainerStyle={styles.tabContainer} showsVerticalScrollIndicator={false}>
         <Card style={styles.journalCard}>
           <View style={styles.journalHeader}>
             <Ionicons name="document-text-outline" size={24} color={theme.colors.accent} />
@@ -630,12 +638,45 @@ export function HabitDetailScreen({ route, navigation }) {
             </Text>
           </View>
         </Card>
+
+        <Card>
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+            <Text variant="subtitle">Notes passées</Text>
+            <Text variant="mono">{notedLogs.length}</Text>
+          </View>
+
+          {notedLogs.length === 0 ? (
+            <Text variant="muted" style={{ marginTop: 10 }}>
+              Aucune note enregistrée.
+            </Text>
+          ) : (
+            <View style={{ marginTop: 12, gap: 10 }}>
+              {notedLogs.slice(0, 20).map((l) => (
+                <Pressable
+                  key={l.id}
+                  onPress={() => onSelectDay(dayIndexFromStart(habit.start_date, l.date))}
+                  style={styles.noteRow}
+                >
+                  <View style={{ flex: 1 }}>
+                    <Text variant="subtitle" numberOfLines={1}>
+                      {formatDate(l.date, 'fr-FR')}
+                    </Text>
+                    <Text variant="muted" numberOfLines={2} style={{ marginTop: 4, lineHeight: 18 }}>
+                      {String(l.note || '').trim()}
+                    </Text>
+                  </View>
+                  <Ionicons name="chevron-forward" size={18} color={theme.colors.textMuted} />
+                </Pressable>
+              ))}
+            </View>
+          )}
+        </Card>
       </ScrollView>
   );
 
   // Onglet "Stats"
   const StatsTab = () => (
-      <ScrollView style={styles.tabContent} showsVerticalScrollIndicator={false}>
+      <ScrollView style={styles.tabContent} contentContainerStyle={styles.tabContainer} showsVerticalScrollIndicator={false}>
         <Card style={styles.statsOverviewCard}>
           <Text variant="title" style={styles.statsTitle}>
             Statistiques
@@ -847,10 +888,12 @@ const styles = StyleSheet.create({
   },
   tabContent: {
     flex: 1,
-    paddingBottom: 20,
+  },
+  tabContainer: {
+    gap: 12,
+    paddingBottom: 120,
   },
   headerCard: {
-    margin: theme.spacing.m,
     padding: 0,
     overflow: 'hidden',
     borderRadius: 24,
@@ -941,8 +984,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   messageCard: {
-    marginHorizontal: theme.spacing.m,
-    marginBottom: theme.spacing.m,
     padding: theme.spacing.l,
     borderRadius: 20,
   },
@@ -953,8 +994,6 @@ const styles = StyleSheet.create({
   },
   messageText: { lineHeight: 20 },
   dateCard: {
-    marginHorizontal: theme.spacing.m,
-    marginBottom: theme.spacing.m,
     padding: theme.spacing.l,
     borderRadius: 20,
   },
@@ -988,8 +1027,6 @@ const styles = StyleSheet.create({
     borderRadius: 16,
   },
   validationCard: {
-    marginHorizontal: theme.spacing.m,
-    marginBottom: theme.spacing.m,
     padding: theme.spacing.l,
     borderRadius: 20,
   },
@@ -1080,8 +1117,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   sosCard: {
-    marginHorizontal: theme.spacing.m,
-    marginBottom: theme.spacing.m,
     padding: theme.spacing.l,
     borderRadius: 20,
     borderWidth: 1,
@@ -1110,8 +1145,6 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   timelineCard: {
-    marginHorizontal: theme.spacing.m,
-    marginBottom: theme.spacing.m,
     padding: theme.spacing.l,
     borderRadius: 20,
   },
@@ -1124,7 +1157,6 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
   },
   journalCard: {
-    margin: theme.spacing.m,
     padding: theme.spacing.l,
     borderRadius: 20,
   },
@@ -1159,8 +1191,18 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     lineHeight: 16,
   },
+  noteRow: {
+    flexDirection: 'row',
+    gap: 12,
+    alignItems: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 12,
+    borderRadius: theme.radius.xl,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+    backgroundColor: theme.colors.surface2,
+  },
   statsOverviewCard: {
-    margin: theme.spacing.m,
     padding: theme.spacing.l,
     borderRadius: 20,
   },
@@ -1206,7 +1248,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   actionsCard: {
-    margin: theme.spacing.m,
     padding: theme.spacing.l,
     borderRadius: 20,
   },

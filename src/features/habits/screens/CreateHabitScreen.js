@@ -293,20 +293,15 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContainer: {
-    // Ajustement pour correspondre au HomeScreen
-    paddingHorizontal: 16, // Changé de 20 à 16 (comme sur le HomeScreen)
-    paddingBottom: 100,    // Légèrement réduit
-    gap: 14,               // Changé de 16 à 14
+    gap: 12,
+    paddingBottom: 120,
   },
 
-  // En-tête - aligné avec le HomeScreen
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginTop: 8,          // Ajouté pour espace en haut
-    marginBottom: 20,      // Augmenté de 16 à 20
-    paddingHorizontal: 4,  // Ajustement pour alignement
+    marginBottom: 12,
   },
   backButton: {
     width: 44,
