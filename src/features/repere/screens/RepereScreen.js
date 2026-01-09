@@ -128,7 +128,7 @@ export function RepereScreen({ navigation }) {
             </Text>
             <View style={{ marginTop: 12, gap: 10 }}>
               <View style={styles.stepRow}>
-                <View style={[styles.stepDot, { backgroundColor: theme.colors.success }]} />
+                <View style={[styles.stepDot, { backgroundColor: '#10B981' }]} />
                 <Text style={{ flex: 1 }}>Qu'est-ce que j'ai bien fait aujourd'hui ?</Text>
               </View>
               <View style={styles.stepRow}>

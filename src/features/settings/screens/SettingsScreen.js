@@ -421,6 +421,35 @@ export function SettingsScreen({ navigation }) {
             </View>
           </View>
         </Card>
+
+        <Card style={{ padding: 0 }}>
+          <View style={styles.blockHeader}>
+            <View style={[styles.blockIcon, { backgroundColor: 'rgba(241,245,249,0.08)' }]}>
+              <Ionicons name="information-circle-outline" size={18} color={theme.colors.textMuted} />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text variant="subtitle">À propos</Text>
+              <Text variant="muted" style={{ marginTop: 2 }}>
+                Description du projet et infos
+              </Text>
+            </View>
+          </View>
+
+          <View style={{ padding: theme.spacing.m, paddingTop: 0, gap: 10 }}>
+            <Pressable onPress={() => navigation.navigate('About')} style={styles.rowLink}>
+              <View style={[styles.rowIcon, { backgroundColor: 'rgba(241,245,249,0.08)' }]}>
+                <Ionicons name="information-circle" size={18} color={theme.colors.textMuted} />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text variant="subtitle">Ouvrir</Text>
+                <Text variant="muted" numberOfLines={1}>
+                  À propos de l'app
+                </Text>
+              </View>
+              <Ionicons name="chevron-forward" size={18} color={theme.colors.textMuted} />
+            </Pressable>
+          </View>
+        </Card>
         </ScrollView>
       </Enter>
     </Screen>

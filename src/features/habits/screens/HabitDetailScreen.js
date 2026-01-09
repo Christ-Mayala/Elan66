@@ -827,7 +827,7 @@ export function HabitDetailScreen({ route, navigation }) {
   }
 
   return (
-      <Screen style={styles.container}>
+      <Screen style={styles.container} padTop={false}>
         <Animated.View style={{ flex: 1, opacity: fadeAnim }}>
           <TabView
               navigationState={{ index: tabIndex, routes }}

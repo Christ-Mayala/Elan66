@@ -80,7 +80,7 @@ export function CreateHabitScreen({ navigation }) {
   };
 
   return (
-      <Screen style={styles.screen}>
+      <Screen style={styles.screen} padTop={false}>
         <Enter style={styles.enter}>
           <ScrollView
               contentContainerStyle={styles.scrollContainer}

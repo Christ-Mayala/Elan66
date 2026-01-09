@@ -5,6 +5,7 @@ import { TabsNavigator } from './TabsNavigator';
 import { CreateHabitScreen } from '../../features/habits/screens/CreateHabitScreen';
 import { HabitDetailScreen } from '../../features/habits/screens/HabitDetailScreen';
 import { ArchivedHabitsScreen } from '../../features/habits/screens/ArchivedHabitsScreen';
+import { AboutScreen } from '../../features/settings/screens/AboutScreen';
 import { StartScreen } from '../../features/onboarding/screens/StartScreen';
 import { getSetting, setSetting, SettingsKeys } from '../../core/db/settingsRepo';
 import { theme } from '../../core/theme/theme';
@@ -48,6 +49,7 @@ export function RootNavigator() {
       <Stack.Screen name="CreateHabit" component={CreateHabitScreen} options={{ title: 'Nouvelle habitude' }} />
       <Stack.Screen name="HabitDetail" component={HabitDetailScreen} options={{ title: 'Détail' }} />
       <Stack.Screen name="ArchivedHabits" component={ArchivedHabitsScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="About" component={AboutScreen} options={{ headerShown: false }} />
     </Stack.Navigator>
   );
 }
