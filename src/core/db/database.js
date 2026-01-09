@@ -107,6 +107,13 @@ const migrateV3 = async (db) => {
   }
 };
 
+const migrateV4 = async (db) => {
+  try {
+    await db.execAsync('ALTER TABLE habits ADD COLUMN important INTEGER NOT NULL DEFAULT 0;');
+  } catch {}
+  await db.execAsync('CREATE INDEX IF NOT EXISTS idx_habits_important ON habits(important);');
+};
+
 const migrate = async (db) => {
   const row = await db.getFirstAsync('PRAGMA user_version;');
   const current = Number(row?.user_version || 0);
@@ -126,6 +133,13 @@ const migrate = async (db) => {
   if (current3 < 3) {
     await migrateV3(db);
     await db.execAsync('PRAGMA user_version = 3;');
+  }
+
+  const row4 = await db.getFirstAsync('PRAGMA user_version;');
+  const current4 = Number(row4?.user_version || 0);
+  if (current4 < 4) {
+    await migrateV4(db);
+    await db.execAsync('PRAGMA user_version = 4;');
   }
 };
 

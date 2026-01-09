@@ -185,6 +185,15 @@ export function HomeScreen({ navigation }) {
           </Text>
         </AnimatedPressable>
 
+        <AnimatedPressable onPress={() => navigation.navigate('Repere')} style={[styles.quickAction, { backgroundColor: 'rgba(139,92,246,0.10)' }]} hitSlop={10}>
+          <View style={[styles.quickIcon, { backgroundColor: theme.colors.accent }]}>
+            <Ionicons name="compass" size={22} color={theme.colors.white} />
+          </View>
+          <Text variant="caption" style={styles.quickLabel}>
+            Répère
+          </Text>
+        </AnimatedPressable>
+
         <AnimatedPressable
           onPress={() => {
             if (items.length === 1) openSos(items[0]);
@@ -256,6 +265,7 @@ export function HomeScreen({ navigation }) {
                     <Text variant="subtitle" numberOfLines={1} style={{ flex: 1 }}>
                       {h.name}
                     </Text>
+                    {h.important ? <Ionicons name="star" size={16} color="#F59E0B" /> : null}
                     <Ionicons name="arrow-forward" size={16} color={theme.colors.textMuted} />
                   </View>
                   <Text variant="muted" numberOfLines={2} style={{ marginTop: 8 }}>
@@ -290,6 +300,7 @@ export function HomeScreen({ navigation }) {
     <Screen>
       <FlatList
         data={items}
+        showsVerticalScrollIndicator={false}
         keyExtractor={(it) => it.id}
         contentContainerStyle={{ gap: 12, paddingBottom: 120 }}
         ListHeaderComponent={header}
@@ -312,7 +323,7 @@ export function HomeScreen({ navigation }) {
         }
         renderItem={({ item }) => (
           <Pressable onPress={() => navigation.navigate('HabitDetail', { habitId: item.id })}>
-            <Card style={{ padding: 0 }}>
+            <Card style={{ padding: 0, overflow: 'hidden' }}>
               <View style={styles.habitCardInner}>
                 <View style={styles.habitTopRow}>
                   <View style={[styles.dot, { backgroundColor: item.statusColor }]} />
@@ -324,6 +335,7 @@ export function HomeScreen({ navigation }) {
                       Phase {item.phase} · Jour {item.dayIndex}/{item.duration_days}
                     </Text>
                   </View>
+                  {item.important ? <Ionicons name="star" size={16} color="#F59E0B" /> : null}
                   <Pressable
                     onPress={(e) => {
                       e.stopPropagation?.();

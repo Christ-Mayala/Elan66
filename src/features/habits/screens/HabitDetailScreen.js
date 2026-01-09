@@ -32,7 +32,7 @@ import { DayPickerStrip } from '../components/DayPickerStrip';
 import { PlantProgress } from '../components/PlantProgress';
 import { SOSModal } from '../components/SOSModal';
 import { LinearGradient } from 'expo-linear-gradient';
-import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
+import { TabView, TabBar } from 'react-native-tab-view';
 
 const { width: screenWidth } = Dimensions.get('window');
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
@@ -111,6 +111,7 @@ export function HabitDetailScreen({ route, navigation }) {
     saveNoteForDay,
     recordSosToday,
     getSosEligibility,
+    setImportant,
     archive,
     remove,
   } = useHabits();
@@ -172,6 +173,14 @@ export function HabitDetailScreen({ route, navigation }) {
   const selectedLog = useMemo(() => {
     return data.logs.find((l) => l.date === selectedDateId) || null;
   }, [data.logs, selectedDateId]);
+
+  const notedLogs = useMemo(() => {
+    if (!habit) return [];
+    return (data.logs || [])
+      .filter((l) => String(l?.note || '').trim())
+      .slice()
+      .sort((a, b) => String(b?.date || '').localeCompare(String(a?.date || '')));
+  }, [data.logs, habit]);
 
   const phase = useMemo(() => phaseProgress(selectedDayIndex), [selectedDayIndex]);
   const todayPhase = useMemo(() => phaseProgress(todayDayIndex), [todayDayIndex]);
@@ -303,6 +312,16 @@ export function HabitDetailScreen({ route, navigation }) {
     }
   };
 
+  const onToggleImportant = async () => {
+    try {
+      const next = habit?.important ? 0 : 1;
+      const h = await setImportant({ habitId, important: next });
+      setData((d) => ({ ...d, habit: h || { ...d.habit, important: next } }));
+    } catch (e) {
+      Alert.alert('Erreur', domainErrorMessageFr(String(e.message || e)));
+    }
+  };
+
   // Archivage de l'habitude
   const onArchive = async () => {
     Alert.alert(
@@ -364,7 +383,7 @@ export function HabitDetailScreen({ route, navigation }) {
 
   // Onglet "Aperçu"
   const OverviewTab = () => (
-      <ScrollView style={styles.tabContent} showsVerticalScrollIndicator={false}>
+      <ScrollView style={styles.tabContent} contentContainerStyle={styles.tabContainer} showsVerticalScrollIndicator={false}>
         <Card style={styles.headerCard}>
           <LinearGradient
               colors={['rgba(139,92,246,0.08)', 'rgba(34,211,238,0.04)']}
@@ -374,18 +393,45 @@ export function HabitDetailScreen({ route, navigation }) {
           >
             <View style={styles.headerContent}>
               <View style={styles.headerInfo}>
-                <Text variant="title" style={styles.habitTitle}>
-                  {habit?.name}
-                </Text>
+                <View style={styles.titleRow}>
+                  <Text variant="title" style={[styles.habitTitle, { flex: 1 }]} numberOfLines={1}>
+                    {habit?.name}
+                  </Text>
+                  <Pressable onPress={onToggleImportant} style={styles.starBtn} hitSlop={10}>
+                    <Ionicons
+                      name={habit?.important ? 'star' : 'star-outline'}
+                      size={20}
+                      color={habit?.important ? '#F59E0B' : theme.colors.textMuted}
+                    />
+                  </Pressable>
+                </View>
                 <Text variant="caption" style={styles.habitDescription}>
                   {habit?.description || habit?.replacement || 'Aucune description'}
                 </Text>
 
-                <View style={styles.phaseBadge}>
-                  <View style={[styles.phaseDot, { backgroundColor: getPhaseColor(phase.phase) }]} />
-                  <Text variant="caption" style={styles.phaseText}>
-                    Phase {phase.phase} · {phaseInfo.name}
-                  </Text>
+                <View style={styles.badgesRow}>
+                  <View style={styles.phaseBadge}>
+                    <View style={[styles.phaseDot, { backgroundColor: getPhaseColor(phase.phase) }]} />
+                    <Text variant="caption" style={styles.phaseText}>
+                      Phase {phase.phase} · {phaseInfo.name}
+                    </Text>
+                  </View>
+
+                  <View
+                    style={[
+                      styles.modeBadge,
+                      habit?.discipline_mode === DisciplineMode.strict ? styles.modeStrict : styles.modeSoft,
+                    ]}
+                  >
+                    <Ionicons
+                      name={habit?.discipline_mode === DisciplineMode.strict ? 'flash' : 'heart'}
+                      size={14}
+                      color={habit?.discipline_mode === DisciplineMode.strict ? '#F59E0B' : '#22D3EE'}
+                    />
+                    <Text variant="caption" style={styles.modeText}>
+                      {habit?.discipline_mode === DisciplineMode.strict ? 'Stricte' : 'Douce'}
+                    </Text>
+                  </View>
                 </View>
               </View>
 
@@ -396,6 +442,18 @@ export function HabitDetailScreen({ route, navigation }) {
               </View>
             </View>
           </LinearGradient>
+        </Card>
+
+        <Card style={styles.messageCard}>
+          <View style={styles.messageHeader}>
+            <Ionicons name="chatbox-ellipses-outline" size={18} color={theme.colors.textMuted} />
+            <Text variant="subtitle" style={{ marginLeft: 10, flex: 1 }}>
+              Message de phase
+            </Text>
+          </View>
+          <Text variant="muted" style={styles.messageText}>
+            {phaseMessage}
+          </Text>
         </Card>
 
         <Card style={styles.dateCard}>
@@ -535,7 +593,7 @@ export function HabitDetailScreen({ route, navigation }) {
 
   // Onglet "Journal"
   const JournalTab = () => (
-      <ScrollView style={styles.tabContent} showsVerticalScrollIndicator={false}>
+      <ScrollView style={styles.tabContent} contentContainerStyle={styles.tabContainer} showsVerticalScrollIndicator={false}>
         <Card style={styles.journalCard}>
           <View style={styles.journalHeader}>
             <Ionicons name="document-text-outline" size={24} color={theme.colors.accent} />
@@ -580,12 +638,45 @@ export function HabitDetailScreen({ route, navigation }) {
             </Text>
           </View>
         </Card>
+
+        <Card>
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+            <Text variant="subtitle">Notes passées</Text>
+            <Text variant="mono">{notedLogs.length}</Text>
+          </View>
+
+          {notedLogs.length === 0 ? (
+            <Text variant="muted" style={{ marginTop: 10 }}>
+              Aucune note enregistrée.
+            </Text>
+          ) : (
+            <View style={{ marginTop: 12, gap: 10 }}>
+              {notedLogs.slice(0, 20).map((l) => (
+                <Pressable
+                  key={l.id}
+                  onPress={() => onSelectDay(dayIndexFromStart(habit.start_date, l.date))}
+                  style={styles.noteRow}
+                >
+                  <View style={{ flex: 1 }}>
+                    <Text variant="subtitle" numberOfLines={1}>
+                      {formatDate(l.date, 'fr-FR')}
+                    </Text>
+                    <Text variant="muted" numberOfLines={2} style={{ marginTop: 4, lineHeight: 18 }}>
+                      {String(l.note || '').trim()}
+                    </Text>
+                  </View>
+                  <Ionicons name="chevron-forward" size={18} color={theme.colors.textMuted} />
+                </Pressable>
+              ))}
+            </View>
+          )}
+        </Card>
       </ScrollView>
   );
 
   // Onglet "Stats"
   const StatsTab = () => (
-      <ScrollView style={styles.tabContent} showsVerticalScrollIndicator={false}>
+      <ScrollView style={styles.tabContent} contentContainerStyle={styles.tabContainer} showsVerticalScrollIndicator={false}>
         <Card style={styles.statsOverviewCard}>
           <Text variant="title" style={styles.statsTitle}>
             Statistiques
@@ -668,12 +759,18 @@ export function HabitDetailScreen({ route, navigation }) {
       </ScrollView>
   );
 
-  // Scènes des onglets
-  const renderScene = SceneMap({
-    overview: OverviewTab,
-    journal: JournalTab,
-    stats: StatsTab,
-  });
+  const renderScene = ({ route }) => {
+    switch (route.key) {
+      case 'overview':
+        return OverviewTab();
+      case 'journal':
+        return JournalTab();
+      case 'stats':
+        return StatsTab();
+      default:
+        return null;
+    }
+  };
 
   // Fonctions utilitaires
   const getPhaseColor = (phaseNum) => {
@@ -730,7 +827,7 @@ export function HabitDetailScreen({ route, navigation }) {
   }
 
   return (
-      <Screen style={styles.container}>
+      <Screen style={styles.container} padTop={false}>
         <Animated.View style={{ flex: 1, opacity: fadeAnim }}>
           <TabView
               navigationState={{ index: tabIndex, routes }}
@@ -791,10 +888,12 @@ const styles = StyleSheet.create({
   },
   tabContent: {
     flex: 1,
-    paddingBottom: 20,
+  },
+  tabContainer: {
+    gap: 12,
+    paddingBottom: 120,
   },
   headerCard: {
-    margin: theme.spacing.m,
     padding: 0,
     overflow: 'hidden',
     borderRadius: 24,
@@ -812,6 +911,21 @@ const styles = StyleSheet.create({
     flex: 1,
     marginRight: 16,
   },
+  titleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  starBtn: {
+    width: 40,
+    height: 40,
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+    backgroundColor: 'rgba(255,255,255,0.04)',
+  },
   habitTitle: {
     fontSize: 22,
     fontWeight: '700',
@@ -821,6 +935,12 @@ const styles = StyleSheet.create({
     color: theme.colors.textMuted,
     marginBottom: 12,
     lineHeight: 20,
+  },
+  badgesRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    gap: 10,
   },
   phaseBadge: {
     flexDirection: 'row',
@@ -832,6 +952,20 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.surface2,
     gap: 6,
   },
+  modeBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+    gap: 6,
+  },
+  modeSoft: { backgroundColor: 'rgba(34,211,238,0.10)' },
+  modeStrict: { backgroundColor: 'rgba(245,158,11,0.10)' },
+  modeText: { fontSize: 12, fontWeight: '700', color: theme.colors.text },
   phaseDot: {
     width: 8,
     height: 8,
@@ -849,9 +983,17 @@ const styles = StyleSheet.create({
     color: theme.colors.textMuted,
     fontSize: 12,
   },
+  messageCard: {
+    padding: theme.spacing.l,
+    borderRadius: 20,
+  },
+  messageHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  messageText: { lineHeight: 20 },
   dateCard: {
-    marginHorizontal: theme.spacing.m,
-    marginBottom: theme.spacing.m,
     padding: theme.spacing.l,
     borderRadius: 20,
   },
@@ -885,8 +1027,6 @@ const styles = StyleSheet.create({
     borderRadius: 16,
   },
   validationCard: {
-    marginHorizontal: theme.spacing.m,
-    marginBottom: theme.spacing.m,
     padding: theme.spacing.l,
     borderRadius: 20,
   },
@@ -977,8 +1117,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   sosCard: {
-    marginHorizontal: theme.spacing.m,
-    marginBottom: theme.spacing.m,
     padding: theme.spacing.l,
     borderRadius: 20,
     borderWidth: 1,
@@ -1007,8 +1145,6 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   timelineCard: {
-    marginHorizontal: theme.spacing.m,
-    marginBottom: theme.spacing.m,
     padding: theme.spacing.l,
     borderRadius: 20,
   },
@@ -1021,7 +1157,6 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
   },
   journalCard: {
-    margin: theme.spacing.m,
     padding: theme.spacing.l,
     borderRadius: 20,
   },
@@ -1056,8 +1191,18 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     lineHeight: 16,
   },
+  noteRow: {
+    flexDirection: 'row',
+    gap: 12,
+    alignItems: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 12,
+    borderRadius: theme.radius.xl,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+    backgroundColor: theme.colors.surface2,
+  },
   statsOverviewCard: {
-    margin: theme.spacing.m,
     padding: theme.spacing.l,
     borderRadius: 20,
   },
@@ -1103,7 +1248,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   actionsCard: {
-    margin: theme.spacing.m,
     padding: theme.spacing.l,
     borderRadius: 20,
   },

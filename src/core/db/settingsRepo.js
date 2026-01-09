@@ -3,6 +3,7 @@ import { getDb } from './database';
 export const SettingsKeys = {
   dailyReminderTime: 'dailyReminderTime',
   onboardingDone: 'onboardingDone',
+  quoteSchedule: 'quoteSchedule',
 };
 
 export const getSetting = async (key) => {

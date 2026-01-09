@@ -9,21 +9,56 @@ import { Button } from '../../../core/ui/Button';
 import { theme } from '../../../core/theme/theme';
 import { exportAllDataToJson, importAllDataFromJson } from '../../../core/services/exportImport';
 import { domainErrorMessageFr } from '../../../core/utils/domainErrors';
-import { getDailyReminderTime, setDailyReminderTime, syncDailyCheckinsForHabits } from '../../../core/services/notifications';
+import {
+  configureNotifications,
+  getDailyReminderTime,
+  getNotifPermissions,
+  getQuoteSchedule,
+  requestNotifPermissions,
+  setDailyReminderTime,
+  setQuoteSchedule,
+  syncDailyCheckinsForHabits,
+  syncQuoteNotifications,
+} from '../../../core/services/notifications';
 import { isExpoGo } from '../../../core/utils/runtime';
 import { useHabits } from '../../habits/context/HabitsContext';
+import { Segmented } from '../../notes/components/segmented';
+import { quotesCount } from '../../../core/services/quotesData';
 
-export function SettingsScreen() {
+export function SettingsScreen({ navigation }) {
   const { state, refreshHabits } = useHabits();
 
   const [hour, setHour] = useState('20');
   const [minute, setMinute] = useState('30');
+  const [notifGranted, setNotifGranted] = useState(null);
+
+  const [qMode, setQMode] = useState('morning');
+  const [qMorningHour, setQMorningHour] = useState('09');
+  const [qMorningMinute, setQMorningMinute] = useState('00');
+  const [qEveningHour, setQEveningHour] = useState('21');
+  const [qEveningMinute, setQEveningMinute] = useState('00');
 
   useEffect(() => {
     (async () => {
       const t = await getDailyReminderTime();
       setHour(String(t.hour));
       setMinute(String(t.minute).padStart(2, '0'));
+
+      if (!isExpoGo()) {
+        try {
+          const p = await getNotifPermissions();
+          setNotifGranted(Boolean(p?.granted || p?.ios?.status));
+        } catch {}
+      }
+
+      try {
+        const qs = await getQuoteSchedule();
+        setQMode(qs.mode);
+        setQMorningHour(String(qs.morning.hour).padStart(2, '0'));
+        setQMorningMinute(String(qs.morning.minute).padStart(2, '0'));
+        setQEveningHour(String(qs.evening.hour).padStart(2, '0'));
+        setQEveningMinute(String(qs.evening.minute).padStart(2, '0'));
+      } catch {}
     })();
   }, []);
 
@@ -33,15 +68,78 @@ export function SettingsScreen() {
     return `${h}:${m}`;
   }, [hour, minute]);
 
+  const onEnableNotifs = async () => {
+    if (isExpoGo()) {
+      Alert.alert('Indisponible', 'Dans Expo Go, les notifications sont limitées. Utilise un dev build pour activer totalement.');
+      return;
+    }
+    try {
+      await configureNotifications();
+      const p = await requestNotifPermissions();
+      const granted = Boolean(p?.granted || p?.ios?.status);
+      setNotifGranted(granted);
+      if (!granted) {
+        Alert.alert('Autorisation requise', 'Active les notifications dans les réglages système du téléphone.');
+        return;
+      }
+      try {
+        await syncQuoteNotifications();
+      } catch {}
+      Alert.alert('OK', 'Notifications activées.');
+    } catch (e) {
+      Alert.alert('Erreur', domainErrorMessageFr(String(e.message || e)));
+    }
+  };
+
   const onSaveTime = async () => {
     try {
       const t = await setDailyReminderTime({ hour, minute });
       if (!isExpoGo()) {
-        await syncDailyCheckinsForHabits(state.habits);
-        Alert.alert('OK', `Rappel quotidien : ${String(t.hour).padStart(2, '0')}:${String(t.minute).padStart(2, '0')}`);
+        await configureNotifications();
+        const p = await requestNotifPermissions();
+        const granted = Boolean(p?.granted || p?.ios?.status);
+        setNotifGranted(granted);
+        if (granted) {
+          await syncDailyCheckinsForHabits(state.habits);
+          Alert.alert('OK', `Rappel quotidien : ${String(t.hour).padStart(2, '0')}:${String(t.minute).padStart(2, '0')}`);
+          return;
+        }
+        Alert.alert('Autorisation requise', `Heure enregistrée (${String(t.hour).padStart(2, '0')}:${String(t.minute).padStart(2, '0')}). Active les notifications dans les réglages système.`);
         return;
       }
       Alert.alert('OK', `Heure enregistrée : ${String(t.hour).padStart(2, '0')}:${String(t.minute).padStart(2, '0')}`);
+    } catch (e) {
+      Alert.alert('Erreur', domainErrorMessageFr(String(e.message || e)));
+    }
+  };
+
+  const onSaveQuoteSchedule = async () => {
+    try {
+      const next = await setQuoteSchedule({
+        mode: qMode,
+        morning: { hour: qMorningHour, minute: qMorningMinute },
+        evening: { hour: qEveningHour, minute: qEveningMinute },
+        daysAhead: 14,
+      });
+
+      if (isExpoGo()) {
+        Alert.alert('OK', `Répère enregistré : ${next.mode === 'off' ? 'off' : 'actif'}. (Notifications limitées dans Expo Go)`);
+        return;
+      }
+
+      await configureNotifications();
+      const p = await requestNotifPermissions();
+      const granted = Boolean(p?.granted || p?.ios?.status);
+      setNotifGranted(granted);
+
+      if (!granted) {
+        Alert.alert('Autorisation requise', 'Active les notifications dans les réglages système du téléphone.');
+        return;
+      }
+
+      await syncQuoteNotifications();
+
+      Alert.alert('OK', `Répère : ${next.mode === 'morning' ? 'matin' : next.mode === 'evening' ? 'soir' : next.mode === 'both' ? 'matin + soir' : 'off'}.`);
     } catch (e) {
       Alert.alert('Erreur', domainErrorMessageFr(String(e.message || e)));
     }
@@ -67,10 +165,13 @@ export function SettingsScreen() {
             const res = await importAllDataFromJson({ replaceAll: true });
             if (res?.canceled) return;
             const habits = await refreshHabits();
-            if (!isExpoGo()) await syncDailyCheckinsForHabits(habits);
+            if (!isExpoGo()) {
+              await syncDailyCheckinsForHabits(habits);
+              await syncQuoteNotifications();
+            }
             Alert.alert(
               'Import terminé',
-              `Habitudes: ${res.counts?.habits || 0}\nLogs: ${res.counts?.logs || 0}\nSOS: ${res.counts?.sos || 0}\nJournal: ${res.counts?.diary || 0}`
+              `Habitudes: ${res.counts?.habits || 0}\nLogs: ${res.counts?.logs || 0}\nSOS: ${res.counts?.sos || 0}\nJournal: ${res.counts?.diary || 0}\nNotes: ${res.counts?.notes || 0}`
             );
           } catch (e) {
             Alert.alert('Erreur', domainErrorMessageFr(String(e.message || e)));
@@ -83,7 +184,7 @@ export function SettingsScreen() {
   return (
     <Screen>
       <Enter style={{ flex: 1 }}>
-        <ScrollView contentContainerStyle={{ gap: 12, paddingBottom: 120 }} keyboardShouldPersistTaps="handled">
+        <ScrollView contentContainerStyle={{ gap: 12, paddingBottom: 120 }} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
         <View style={styles.topBar}>
           <View style={styles.avatar}>
             <Ionicons name="settings" size={18} color={theme.colors.textMuted} />
@@ -106,7 +207,7 @@ export function SettingsScreen() {
             <View style={{ flex: 1 }}>
               <Text variant="subtitle">Notifications</Text>
               <Text variant="muted" style={{ marginTop: 2 }}>
-                Rappel quotidien (local)
+                Rappel quotidien (local){notifGranted === null ? '' : notifGranted ? ' · activées' : ' · désactivées'}
               </Text>
             </View>
           </View>
@@ -132,7 +233,127 @@ export function SettingsScreen() {
               </View>
             </View>
 
-            <Button title="Enregistrer" onPress={onSaveTime} />
+            <View style={{ gap: 10 }}>
+              <Button title="Activer les notifications" variant="ghost" onPress={onEnableNotifs} />
+              <Button title="Enregistrer" onPress={onSaveTime} />
+            </View>
+          </View>
+        </Card>
+
+        <Card style={{ padding: 0 }}>
+          <View style={styles.blockHeader}>
+            <View style={[styles.blockIcon, { backgroundColor: 'rgba(245,158,11,0.14)' }]}>
+              <Ionicons name="star" size={18} color={theme.colors.warn} />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text variant="subtitle">Important</Text>
+              <Text variant="muted" style={{ marginTop: 2 }}>
+                Mets une habitude en ★ pour la remonter en haut.
+              </Text>
+            </View>
+          </View>
+
+          <View style={{ padding: theme.spacing.m, paddingTop: 0, gap: 10 }}>
+            <View style={styles.rowInfo}>
+              <Text variant="muted" style={{ flex: 1 }}>
+                Tu peux activer ★ dans le détail d'une habitude.
+              </Text>
+              <Ionicons name="chevron-forward" size={18} color={theme.colors.textMuted} />
+            </View>
+          </View>
+        </Card>
+
+        <Card style={{ padding: 0 }}>
+          <View style={styles.blockHeader}>
+            <View style={[styles.blockIcon, { backgroundColor: 'rgba(139,92,246,0.14)' }]}>
+              <Ionicons name="compass" size={18} color={theme.colors.accent} />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text variant="subtitle">Répère</Text>
+              <Text variant="muted" style={{ marginTop: 2 }}>
+                Citations matin / soir (par défaut 09:00)
+              </Text>
+            </View>
+          </View>
+
+          <View style={{ padding: theme.spacing.m, paddingTop: 0, gap: 12 }}>
+            {quotesCount() ? null : (
+              <View style={styles.warning}>
+                <Ionicons name="warning" size={16} color={theme.colors.warn} />
+                <Text variant="muted" style={{ flex: 1, color: theme.colors.warn }}>
+                  Aucune citation n'est encore enregistrée. Le fichier actuel contient des auteurs, mais pas de citations.
+                </Text>
+              </View>
+            )}
+
+            <Text variant="muted">Fréquence</Text>
+            <Segmented
+              value={qMode}
+              options={[
+                { value: 'morning', label: 'Matin' },
+                { value: 'evening', label: 'Soir' },
+                { value: 'both', label: 'Matin+Soir' },
+                { value: 'off', label: 'Off' },
+              ]}
+              onChange={setQMode}
+            />
+
+            {(qMode === 'morning' || qMode === 'both') && (
+              <View style={{ flexDirection: 'row', gap: 10 }}>
+                <View style={{ flex: 1 }}>
+                  <Text variant="muted">Matin (H)</Text>
+                  <TextInput value={qMorningHour} onChangeText={setQMorningHour} keyboardType="number-pad" style={styles.input} />
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text variant="muted">Matin (M)</Text>
+                  <TextInput value={qMorningMinute} onChangeText={setQMorningMinute} keyboardType="number-pad" style={styles.input} />
+                </View>
+              </View>
+            )}
+
+            {(qMode === 'evening' || qMode === 'both') && (
+              <View style={{ flexDirection: 'row', gap: 10 }}>
+                <View style={{ flex: 1 }}>
+                  <Text variant="muted">Soir (H)</Text>
+                  <TextInput value={qEveningHour} onChangeText={setQEveningHour} keyboardType="number-pad" style={styles.input} />
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text variant="muted">Soir (M)</Text>
+                  <TextInput value={qEveningMinute} onChangeText={setQEveningMinute} keyboardType="number-pad" style={styles.input} />
+                </View>
+              </View>
+            )}
+
+            <Button title="Enregistrer Répère" onPress={onSaveQuoteSchedule} disabled={!quotesCount() && qMode !== 'off'} icon="save" />
+          </View>
+        </Card>
+
+        <Card style={{ padding: 0 }}>
+          <View style={styles.blockHeader}>
+            <View style={[styles.blockIcon, { backgroundColor: 'rgba(241,245,249,0.08)' }]}>
+              <Ionicons name="archive" size={18} color={theme.colors.textMuted} />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text variant="subtitle">Archives</Text>
+              <Text variant="muted" style={{ marginTop: 2 }}>
+                Visualiser les habitudes archivées
+              </Text>
+            </View>
+          </View>
+
+          <View style={{ padding: theme.spacing.m, paddingTop: 0, gap: 10 }}>
+            <Pressable onPress={() => navigation.navigate('ArchivedHabits')} style={styles.rowLink}>
+              <View style={[styles.rowIcon, { backgroundColor: 'rgba(241,245,249,0.08)' }]}>
+                <Ionicons name="archive-outline" size={18} color={theme.colors.textMuted} />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text variant="subtitle">Habitudes archivées</Text>
+                <Text variant="muted" numberOfLines={1}>
+                  Ouvrir la liste
+                </Text>
+              </View>
+              <Ionicons name="chevron-forward" size={18} color={theme.colors.textMuted} />
+            </Pressable>
           </View>
         </Card>
 
@@ -152,7 +373,7 @@ export function SettingsScreen() {
           <View style={{ padding: theme.spacing.m, paddingTop: 0, gap: 10 }}>
             <Pressable onPress={onExport} style={styles.rowLink}>
               <View style={[styles.rowIcon, { backgroundColor: 'rgba(34,211,238,0.14)' }]}>
-                <Ionicons name="download" size={18} color={theme.colors.accent2} />
+                <Ionicons name="download-outline" size={18} color={theme.colors.accent2} />
               </View>
               <View style={{ flex: 1 }}>
                 <Text variant="subtitle">Exporter</Text>
@@ -165,7 +386,7 @@ export function SettingsScreen() {
 
             <Pressable onPress={onImport} style={[styles.rowLink, styles.rowDanger]}>
               <View style={[styles.rowIcon, { backgroundColor: 'rgba(239,68,68,0.14)' }]}>
-                <Ionicons name="upload" size={18} color={theme.colors.danger} />
+                <Ionicons name="cloud-upload-outline" size={18} color={theme.colors.danger} />
               </View>
               <View style={{ flex: 1 }}>
                 <Text variant="subtitle">Importer</Text>
@@ -198,6 +419,35 @@ export function SettingsScreen() {
               </Text>
               <Ionicons name="shield-checkmark" size={18} color={theme.colors.accent2} />
             </View>
+          </View>
+        </Card>
+
+        <Card style={{ padding: 0 }}>
+          <View style={styles.blockHeader}>
+            <View style={[styles.blockIcon, { backgroundColor: 'rgba(241,245,249,0.08)' }]}>
+              <Ionicons name="information-circle-outline" size={18} color={theme.colors.textMuted} />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text variant="subtitle">À propos</Text>
+              <Text variant="muted" style={{ marginTop: 2 }}>
+                Description du projet et infos
+              </Text>
+            </View>
+          </View>
+
+          <View style={{ padding: theme.spacing.m, paddingTop: 0, gap: 10 }}>
+            <Pressable onPress={() => navigation.navigate('About')} style={styles.rowLink}>
+              <View style={[styles.rowIcon, { backgroundColor: 'rgba(241,245,249,0.08)' }]}>
+                <Ionicons name="information-circle" size={18} color={theme.colors.textMuted} />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text variant="subtitle">Ouvrir</Text>
+                <Text variant="muted" numberOfLines={1}>
+                  À propos de l'app
+                </Text>
+              </View>
+              <Ionicons name="chevron-forward" size={18} color={theme.colors.textMuted} />
+            </Pressable>
           </View>
         </Card>
         </ScrollView>

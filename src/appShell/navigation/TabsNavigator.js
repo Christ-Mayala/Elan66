@@ -5,6 +5,7 @@ import { HomeScreen } from '../../features/habits/screens/HomeScreen';
 import { NotesNavigator } from '../../features/notes/navigation/NotesNavigator';
 import { StatsScreen } from '../../features/stats/screens/StatsScreen';
 import { SettingsScreen } from '../../features/settings/screens/SettingsScreen';
+import { RepereScreen } from '../../features/repere/screens/RepereScreen';
 import { theme } from '../../core/theme/theme';
 
 const Tab = createBottomTabNavigator();
@@ -12,6 +13,7 @@ const Tab = createBottomTabNavigator();
 const iconByRoute = {
   Home: 'leaf',
   Notes: 'book',
+  Repere: 'compass',
   Stats: 'stats-chart',
   Settings: 'settings',
 };
@@ -49,6 +51,7 @@ export function TabsNavigator() {
     >
       <Tab.Screen name="Home" component={HomeScreen} options={{ title: 'Habitudes' }} />
       <Tab.Screen name="Notes" component={NotesNavigator} options={{ title: 'Journal' }} />
+      <Tab.Screen name="Repere" component={RepereScreen} options={{ title: 'Répère' }} />
       <Tab.Screen name="Stats" component={StatsScreen} options={{ title: 'Stats' }} />
       <Tab.Screen name="Settings" component={SettingsScreen} options={{ title: 'Réglages' }} />
     </Tab.Navigator>

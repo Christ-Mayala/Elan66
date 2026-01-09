@@ -3,7 +3,7 @@ import React, { useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { AppProviders } from './src/appShell/providers/AppProviders';
-import { configureNotifications, requestNotifPermissions } from './src/core/services/notifications';
+import { configureNotifications, requestNotifPermissions, syncQuoteNotifications } from './src/core/services/notifications';
 import { installDevBooleanPropsGuard } from './src/core/utils/devBooleanPropsGuard';
 import { isExpoGo } from './src/core/utils/runtime';
 
@@ -15,7 +15,11 @@ export default function App() {
     (async () => {
       try {
         await configureNotifications();
-        await requestNotifPermissions();
+        const p = await requestNotifPermissions();
+        const granted = Boolean(p?.granted || p?.ios?.status);
+        if (granted) {
+          await syncQuoteNotifications();
+        }
       } catch {}
     })();
   }, []);

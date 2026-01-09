@@ -22,7 +22,7 @@ export const listHabitsWithSummary = async ({ includeArchived = false } = {}) =>
       (SELECT COUNT(*) FROM sos_events s WHERE s.habit_id = h.id) AS sos_total
     FROM habits h
     ${where}
-    ORDER BY h.created_at DESC;
+    ORDER BY h.important DESC, h.updated_at DESC;
   `
   );
   return rows;
@@ -79,6 +79,13 @@ export const archiveHabit = async (habitId) => {
 export const deleteHabit = async (habitId) => {
   const db = await getDb();
   await db.runAsync('DELETE FROM habits WHERE id = ?;', [habitId]);
+};
+
+export const setHabitImportant = async (habitId, important) => {
+  const db = await getDb();
+  const now = new Date().toISOString();
+  await db.runAsync('UPDATE habits SET important = ?, updated_at = ? WHERE id = ?;', [Number(important) ? 1 : 0, now, habitId]);
+  return getHabitById(habitId);
 };
 
 export const markHabitCompleted = async (habitId) => {
