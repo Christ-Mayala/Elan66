@@ -82,6 +82,9 @@ export function SettingsScreen({ navigation }) {
         Alert.alert('Autorisation requise', 'Active les notifications dans les réglages système du téléphone.');
         return;
       }
+      try {
+        await syncQuoteNotifications();
+      } catch {}
       Alert.alert('OK', 'Notifications activées.');
     } catch (e) {
       Alert.alert('Erreur', domainErrorMessageFr(String(e.message || e)));
