@@ -151,7 +151,7 @@ export function NoteEditorScreen({ navigation, route }) {
           />
         </Card>
 
-        <Card style={{ padding: 0 }}>
+        <Card style={{ padding: 0, overflow: 'hidden' }}>
           <View style={styles.toolbar}>
             <View style={styles.toolsRow}>
               <ToolButton label="#" onPress={() => onInsert('# ')} />

@@ -32,7 +32,7 @@ import { DayPickerStrip } from '../components/DayPickerStrip';
 import { PlantProgress } from '../components/PlantProgress';
 import { SOSModal } from '../components/SOSModal';
 import { LinearGradient } from 'expo-linear-gradient';
-import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
+import { TabView, TabBar } from 'react-native-tab-view';
 
 const { width: screenWidth } = Dimensions.get('window');
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
@@ -718,12 +718,18 @@ export function HabitDetailScreen({ route, navigation }) {
       </ScrollView>
   );
 
-  // Scènes des onglets
-  const renderScene = SceneMap({
-    overview: OverviewTab,
-    journal: JournalTab,
-    stats: StatsTab,
-  });
+  const renderScene = ({ route }) => {
+    switch (route.key) {
+      case 'overview':
+        return OverviewTab();
+      case 'journal':
+        return JournalTab();
+      case 'stats':
+        return StatsTab();
+      default:
+        return null;
+    }
+  };
 
   // Fonctions utilitaires
   const getPhaseColor = (phaseNum) => {

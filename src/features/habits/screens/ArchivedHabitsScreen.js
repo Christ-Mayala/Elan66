@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { Alert, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Screen } from '../../../core/ui/Screen';
 import { Enter } from '../../../core/ui/Enter';
@@ -8,15 +8,19 @@ import { Card } from '../../../core/ui/Card';
 import { theme } from '../../../core/theme/theme';
 import { HabitStatus } from '../../../core/utils/constants';
 import { listHabitsWithSummary } from '../data/habitsRepo';
+import { useHabits } from '../context/HabitsContext';
 
 export function ArchivedHabitsScreen({ navigation }) {
+  const { remove } = useHabits();
   const [items, setItems] = useState([]);
 
+  const refresh = async () => {
+    const rows = await listHabitsWithSummary({ includeArchived: true });
+    setItems(rows || []);
+  };
+
   useEffect(() => {
-    (async () => {
-      const rows = await listHabitsWithSummary({ includeArchived: true });
-      setItems(rows || []);
-    })();
+    refresh();
   }, []);
 
   const archived = useMemo(() => items.filter((h) => h.status === HabitStatus.archived), [items]);
@@ -57,7 +61,7 @@ export function ArchivedHabitsScreen({ navigation }) {
             <View style={{ gap: 10 }}>
               {archived.map((h) => (
                 <Pressable key={h.id} onPress={() => navigation.navigate('HabitDetail', { habitId: h.id })}>
-                  <Card style={{ padding: 0 }}>
+                  <Card style={{ padding: 0, overflow: 'hidden' }}>
                     <View style={styles.row}>
                       <View style={styles.rowIcon}>
                         <Ionicons name={h.important ? 'star' : 'archive-outline'} size={18} color={h.important ? '#F59E0B' : theme.colors.textMuted} />
@@ -73,6 +77,26 @@ export function ArchivedHabitsScreen({ navigation }) {
                           Validés: {h.days_validated || 0} · SOS: {h.sos_total || 0}
                         </Text>
                       </View>
+                      <Pressable
+                        onPress={(e) => {
+                          e.stopPropagation?.();
+                          Alert.alert('Supprimer', 'Supprimer définitivement cette habitude archivée ?', [
+                            { text: 'Annuler', style: 'cancel' },
+                            {
+                              text: 'Supprimer',
+                              style: 'destructive',
+                              onPress: async () => {
+                                await remove(h.id);
+                                await refresh();
+                              },
+                            },
+                          ]);
+                        }}
+                        hitSlop={12}
+                        style={styles.trashBtn}
+                      >
+                        <Ionicons name="trash-outline" size={18} color={theme.colors.danger} />
+                      </Pressable>
                       <Ionicons name="chevron-forward" size={18} color={theme.colors.textMuted} />
                     </View>
                   </Card>
@@ -125,5 +149,15 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.surface2,
     borderWidth: 1,
     borderColor: theme.colors.border,
+  },
+  trashBtn: {
+    width: 38,
+    height: 38,
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(239,68,68,0.22)',
+    backgroundColor: 'rgba(239,68,68,0.10)',
   },
 });

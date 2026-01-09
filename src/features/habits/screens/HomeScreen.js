@@ -323,7 +323,7 @@ export function HomeScreen({ navigation }) {
         }
         renderItem={({ item }) => (
           <Pressable onPress={() => navigation.navigate('HabitDetail', { habitId: item.id })}>
-            <Card style={{ padding: 0 }}>
+            <Card style={{ padding: 0, overflow: 'hidden' }}>
               <View style={styles.habitCardInner}>
                 <View style={styles.habitTopRow}>
                   <View style={[styles.dot, { backgroundColor: item.statusColor }]} />

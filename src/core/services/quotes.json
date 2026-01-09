@@ -1,156 +1,618 @@
 [
-  { "author": "Marc Aurèle", "text": "Le bonheur de ta vie dépend de la qualité de tes pensées." },
-  { "author": "Sénèque", "text": "La vie, ce n'est pas d'attendre que les orages passent, c'est d'apprendre à danser sous la pluie." },
-  { "author": "Épictète", "text": "Ce n'est pas ce qui arrive, mais la manière dont nous y réagissons, qui détient le pouvoir de nous affecter." },
-  { "author": "Gandhi", "text": "Soyez le changement que vous voulez voir dans le monde." },
-  { "author": "Nelson Mandela", "text": "L'éducation est l'arme la plus puissante pour changer le monde." },
-  { "author": "Lao-Tseu", "text": "Mille verdures naissent d'une seule racine, mille courants d'une seule source." },
-  { "author": "Bouddha", "text": "L'esprit est tout. Ce que vous pensez, vous devrez en rendre compte d'une manière ou d'une autre." },
-  { "author": "Confucius", "text": "Songe à la manière de finiras ta vie tous les matins lorsque tu te lève, et chaque soir lorsque tu te couche." },
-  { "author": "Winston Churchill", "text": "Le succès consiste à passer d'échec en échec sans perte d'enthousiasme." },
-  { "author": "Dalton Tran", "text": "La force n'est pas donnée, elle s יכולゲームprend chaque jour." },
-  { "author": "Martin Luther King Jr.", "text": "La vraie mesure d'un homme n'est pas comment il se comporte dans des moments où il est au sommet, mais comment il gère quand il est en bas." },
-  { "author": "Albert Camus", "text": "La seule manière de traiter la vie, c'est d'aller de l'avant avec passion." },
-  { "author": "Victor Hugo", "text": "Il n'y a rien de plus puissant qu'une idée dont l'heure est venue." },
-  { "author": "Honoré de Balzac", "text": "Le premier pas vers la réussite est de s'avouer à soi-même son incompétence." },
-  { "author": "Léopold Sedar Senghor", "text": "Le créateur est toujours un peu perdu dans son œuvre." },
-  { "author": "Aimé Césaire", "text": "La poésie est la porte par laquelle l'homme sort des ténèbres de la solitude pour entrer dans le jour du partage." },
-  { "author": "Henri Bergson", "text": "La joie est la plus belle de toutes les sensations." },
-  { "author": "Simone de Beauvoir", "text": "On ne nait pas femme, on le devient." },
-  { "author": "Jean-Paul Sartre", "text": "L'homme est condamné à être libre." },
-  { "author": "Albert Schweitzer", "text": "Le bonheur est la satisfaction de l'âme en paix avec elle-même." },
-  { "author": "Mark Twain", "text": "Le secret pour sortir de la difficulté, c'est d'imaginer comment on en sortirait si on était déjà sorti." },
-  { "author": "Ralph Waldo Emerson", "text": "La vie n'est pas une vente aux enchères, et vous ne devez pas vivre aux appels du plus fort." },
-  { "author": "Henry David Thoreau", "text": "La plupart des gens menent une vie de désespoir silencieux." },
-  { "author": "Maya Angelou", "text": "Le courage, c'est la force du cœur, c'est se lancer dans l'inconnu." },
-  { "author": "Howard Thurman", "text": "Ne vous divertissez jamais jusqu'à ce que vous ayez atteint ce que vous avez réellement choisi de faire." },
-  { "author": "Ted Hughes", "text": "Ce dont vous avez vraiment besoin est un changement de point de vue." },
-  { "author": "Pablo Neruda", "text": "Les choses ont leur vie, leur caractère." },
-  { "author": "Kahlil Gibran", "text": "Le verbe 'aimer' est le verbe le plus dynamique dans le dictionnaire." },
-  { "author": "Osho", "text": "Ne laissez personne d'autre que vous-même seul déterminer votre valeur." },
-  { "author": "Rumi", "text": "Ce que vous recherchez est ici: recherchez-vous-même." },
-  { "author": "Deepak Chopra", "text": "Le corps est une source infinie de santé, de guérison, et de vitalité." },
-  { "author": "Wayne Dyer", "text": "Si tu changes la façon dont tu regardes les choses, les choses que tu regardes changeront." },
-  { "author": "Louise Hay", "text": "Votre pensée crée votre réalité." },
-  { "author": "Paul Coelho", "text": "Lorsque vous désirez quelque chose, l'univers entier conspire à vous aider." },
-  { "author": "Paulo Freire", "text": "Personne n'est plus ignorant que celui qui refuse la connaissance." },
-  { "author": "Anthony de Mello", "text": "La meilleure façon d'informer les autres, c'est par exemple." },
-  { "author": "Thich Nhat Hanh", "text": "La paix est chaque pas." },
-  { "author": "Mère Teresa", "text": "Ce que nous faisons pour nous-mêmes meurt avec nous, mais ce que nous faisons pour les autres et pour le monde reste." },
-  { "author": "Fyodor Dostoyevsky", "text": "L'homme a été créé pour vivre la vie et non pour résoudre des équations numériques." },
-  { "author": "Leo Tolstoy", "text": "Toy le bonheur de n'importe quelle situation, même la plus triste, en réalisant que tu aurais pu être plus malheureux." },
-  { "author": "Anton Chekhov", "text": "L'homme est fait pour la paix et pour l'amour, et non pas pour le malheur et la guerre." },
-  { "author": "Vladimir Nabokov", "text": "Ce que je vois maintenant dans le miroir, c'est tout un monde de possibilités." },
-  { "author": "James Baldwin", "text": "Il n'y a qu'une solution, c'est vous tous." },
-  { "author": "Zora Neale Hurston", "text": "Les gens qui se lamentent sur ce qu'ils n'ont pas ne recevront jamais rien." },
-  { "author": "Nella Larsen", "text": "Le temps conduit à des changements imprévus." },
-  { "author": "Susan Sontag", "text": "L'art est la plus belle des façons de savoir." },
-  { "author": "Joan Didion", "text": "Nous n'écrivons jamais pour découvrir la vérité, mais pour nous rassurer." },
-  { "author": "Dalton Tran", "text": "La force n'est pas donnée, elle s'prend chaque jour." },
-  { "author": "Benedict Cumberbatch", "text": "Il n'y a pas de mécanisme divin pour séparer un acteur de son travail." },
-  { "author": "Olivier Rousteing", "text": "J'ai l'intention de me battre pour la mode." },
-  { "author": "Larry King", "text": "Nous devons trouver la paix et la tranquillité dans ce monde bruyant." },
-  { "author": "Vin Diesel", "text": "Les risques sont une partie naturelle de la vie." },
-  { "author": "Chris Roberson", "text": "Applications mobiles permettent à l'artisanat et au design de devenir accessible à tous." },
-  { "author": "Meredith Vieira", "text": "Nous avons tous nos différents talents, et nous doivent nous aider mutuellement." },
-  { "author": "Martin Luther King Jr.", "text": "La inactivité dans le moment du choix est un choix en soi." },
-  { "author": "Amelia Earhart", "text": "L'aventure, c'est la vie." },
-  { "author": "Ramona Singer", "text": "Soyez prêt à partager votre succès avec ceux qui sont autour de vous." },
-  { "author": "Eve Ensler", "text": "Les plus grandes révolutions sont souvent des actes d'amour." },
-  { "author": "Kate Hudson", "text": "Faites des erreurs et soyez audacieux." },
-  { "author": "Jack Husser", "text": "L ففيdence est la clé pour réussir." },
-  { "author": "Ken Hakuta", "text": "Vous devez toujours avoir une vision claire quand vous commencez quelque chose." },
-  { "author": "Hugh Dancy", "text": "Recherchez la paix intérieure et appréciez le moment." },
-  { "author": "Jack Hanna", "text": "Ne prenez pas la vie trop sérieusement, profitez du voyage." },
-  { "author": "Ralph Macchio", "text": "La performance sur l'écran de cinéma dépend souvent de la collaboration." },
-  { "author": "Karla Southern", "text": "Chaque moment mérite d'être savouré." },
-  { "author": "Mark Twain", "text": "Ne laissez jamais quelqu'un d'autre vous définir." },
-  { "author": "Henry David Thoreau", "text": "Le succès n'est pas la clé du bonheur, c'est la recherche de votre passion." },
-  { "author": "Maya Angelou", "text": "Faites de votre vie une belle histoire." },
-  { "author": "Howard Thurman", "text": "Ne laissez pas le passé définir votre avenir." },
-  { "author": "Ted Hughes", "text": "La création est un processus de découverte." },
-  { "author": "Pablo Neruda", "text": "L'amour est la source de l'inspiration." },
-  { "author": "Kahlil Gibran", "text": "La vie offre des moments pour réfléchir." },
-  { "author": "Osho", "text": "Soyez vous-même, car tout le monde d'autre est déjà pris." },
-  { "author": "Rumi", "text": "Oubliez le passé et vivez le moment présent." },
-  { "author": "Deepak Chopra", "text": "Le corps et l'esprit sont interconnectés." },
-  { "author": "Wayne Dyer", "text": "Chaque problème est une opportunité déguisée." },
-  { "author": "Louise Hay", "text": "La pensée positive attire des moments positifs." },
-  { "author": "Paul Coelho", "text": "Suivez votre cœur, il sait ce que vous voulez vraiment." },
-  { "author": "Paulo Freire", "text": "L'éducation est la clé vers la liberté." },
-  { "author": "Anthony de Mello", "text": "La conscience est le chemin vers l'illumination." },
-  { "author": "Thich Nhat Hanh", "text": "La paix commence par soi-même." },
-  { "author": "Mère Teresa", "text": "Faites que chaque jour compte." },
-  { "author": "Fyodor Dostoyevsky", "text": "L'espoir est une force puissante." },
-  { "author": "Leo Tolstoy", "text": "La vérité réside dans la simplicité." },
-  { "author": "Anton Chekhov", "text": "La beauté est partout, il suffit de savoir la voir." },
-  { "author": "Vladimir Nabokov", "text": "L'inspiration vient de l'intérieur." },
-  { "author": "James Baldwin", "text": "La liberté demande du courage." },
-  { "author": "Zora Neale Hurston", "text": "Chaque personne a sa propre histoire unique." },
-  { "author": "Nella Larsen", "text": "Les défis construisent le caractère." },
-  { "author": "Susan Sontag", "text": "L'art est la réponse à l'âme." },
-  { "author": "Joan Didion", "text": "Les mots ont le pouvoir de transformer." },
-  { "author": "Benedict Cumberbatch", "text": "Chaque rôle est une nouvelle aventure." },
-  { "author": "Olivier Rousteing", "text": "La mode est une forme d'expression." },
-  { "author": "Larry King", "text": "La curiosité mène à la découverte." },
-  { "author": "Vin Diesel", "text": "Bien courir demande de la discipline." },
-  { "author": "Chris Roberson", "text": "La technologie rendant possible l'impossible." },
-  { "author": "Meredith Vieira", "text": "L'empathie rend le monde mieux." },
-  { "author": "Martin Luther King Jr.", "text": "L'amour pardonne toutes erreurs." },
-  { "author": "Amelia Earhart", "text": "Ayez le courage de voler." },
-  { "author": "Ramona Singer", "text": "Le succès est une expérience partagée." },
-  { "author": "Eve Ensler", "text": "La transformation commence par l'unisexe." },
-  { "author": "Kate Hudson", "text": "Vivez votre meilleur maintenant." },
-  { "author": "Jack Husser", "text": "La confiance se construit avec le temps." },
-  { "author": "Ken Hakuta", "text": "La vision rend le futur clair." },
-  { "author": "Hugh Dancy", "text": "La paix intérieure est un trésor." },
-  { "author": "Jack Hanna", "text": "Profitez de chaque moment." },
-  { "author": "Ralph Macchio", "text": "La collaboration est la clé du succès." },
-  { "author": "Karla Southern", "text": "Savourez chaque instant." },
-  { "author": "Mark Twain", "text": "Ne laissez jamais quelqu'un d'autre définir votre histoire." },
-  { "author": "Henry David Thoreau", "text": "Cultivez votre passion, c'est la clé du bonheur." },
-  { "author": "Maya Angelou", "text": "Votre histoire est unique, faites-la belle." },
-  { "author": "Howard Thurman", "text": "Ne laissez pas le passé dénigrer votre avenir." },
-  { "author": "Ted Hughes", "text": "La création est une aventure de découverte." },
-  { "author": "Pablo Neruda", "text": "L'amour inspira l'inspiration." },
-  { "author": "Kahlil Gibran", "text": "Chaque moment est une envolée de découverte." },
-  { "author": "Osho", "text": "Chaque personne est unique, soyez vous-même." },
-  { "author": "Rumi", "text": "Le présent est un cadeau, purement parfait." },
-  { "author": "Deepak Chopra", "text": "La santé commence par l'esprit." },
-  { "author": "Wayne Dyer", "text": "Chaque problème est une chance de grandir." },
-  { "author": "Louise Hay", "text": "La pensée positive attire le positif." },
-  { "author": "Paul Coelho", "text": "Suivez votre cœur, il connaît le chemin." },
-  { "author": "Paulo Freire", "text": "L'éducation libère l'esprit." },
-  { "author": "Anthony de Mello", "text": "La conscience est une lampe guide." },
-  { "author": "Thich Nhat Hanh", "text": "Le calme intérieur est la clé de la paix." },
-  { "author": "Mère Teresa", "text": "Aimez comme si c'était la dernière fois." },
-  { "author": "Fyodor Dostoyevsky", "text": "L'espoir est une étoile guide." },
-  { "author": "Leo Tolstoy", "text": "La vérité est simple, mais profonde." },
-  { "author": "Anton Chekhov", "text": "La beauté se trouve dans les détails." },
-  { "author": "Vladimir Nabokov", "text": "Faites de chaque mot une œuvre d'art." },
-  { "author": "James Baldwin", "text": "La liberté est un choix courageux." },
-  { "author": "Zora Neale Hurston", "text": "Chaque personne a une histoire essentielle à raconter." },
-  { "author": "Nella Larsen", "text": "Les défis sont des étapes de croissance." },
-  { "author": "Susan Sontag", "text": "L'art est un langage universel." },
-  { "author": "Joan Didion", "text": "Les mots peuvent transformer des vies." },
-  { "author": "Benedict Cumberbatch", "text": "Chaque rôle est une nouvelle aventure." },
-  { "author": "Olivier Rousteing", "text": "La mode est une forme d'expression audacieuse." },
-  { "author": "Larry King", "text": "La curiosité ouvre la voie à la découverte." },
-  { "author": "Vin Diesel", "text": "La discipline mènes à l'excellence." },
-  { "author": "Chris Roberson", "text": "La technologie rend possible l'impossible." },
-  { "author": "Meredith Vieira", "text": "L'empathie rend le monde meilleur." },
-  { "author": "Martin Luther King Jr.", "text": "L'amour conquiert toutes choses." },
-  { "author": "Amelia Earhart", "text": "Ayez le courage de réaliser vos rêves." },
-  { "author": "Ramona Singer", "text": "Le succès est une aventure partagée." },
-  { "author": "Eve Ensler", "text": "La transformation commence par la conscience." },
-  { "author": "Kate Hudson", "text": "Vivez votre meilleur maintenant." },
-  { "author": "Jack Husser", "text": "La confiance se construit avec le temps." },
-  { "author": "Ken Hakuta", "text": "La vision rend le futur clair." },
-  { "author": "Hugh Dancy", "text": "La paix intérieure est un trésor précieux." },
-  { "author": "Jack Hanna", "text": "Profitez de chaque moment." },
-  { "author": "Ralph Macchio", "text": "La collaboration est la clé du succès." },
-  { "author": "Karla Southern", "text": "Savourez chaque instant de la vie." },
-  { "author": "Dalton Tran", "text": "La force est une discipline quotidienne." },
-  { "author": "Dalton Tran", "text": "Tout commence par une décision." },
-  { "author": "Dalton Tran", "text": "La persévérance surmonte les obstacles." }
+  {
+    "author": "Marc Aurèle",
+    "text": "Le bonheur de ta vie dépend de la qualité de tes pensées."
+  },
+  {
+    "author": "Sénèque",
+    "text": "La vie, ce n'est pas d'attendre que les orages passent, c'est d'apprendre à danser sous la pluie."
+  },
+  {
+    "author": "Épictète",
+    "text": "Ce n'est pas ce qui arrive, mais la manière dont nous y réagissons, qui détient le pouvoir de nous affecter."
+  },
+  {
+    "author": "Gandhi",
+    "text": "Soyez le changement que vous voulez voir dans le monde."
+  },
+  {
+    "author": "Nelson Mandela",
+    "text": "L'éducation est l'arme la plus puissante pour changer le monde."
+  },
+  {
+    "author": "Lao-Tseu",
+    "text": "Mille verdures naissent d'une seule racine, mille courants d'une seule source."
+  },
+  {
+    "author": "Bouddha",
+    "text": "L'esprit est tout. Ce que vous pensez, vous devrez en rendre compte d'une manière ou d'une autre."
+  },
+  {
+    "author": "Confucius",
+    "text": "Songe à la manière de finiras ta vie tous les matins lorsque tu te lève, et chaque soir lorsque tu te couche."
+  },
+  {
+    "author": "Winston Churchill",
+    "text": "Le succès consiste à passer d'échec en échec sans perte d'enthousiasme."
+  },
+  {
+    "author": "Dalton Tran",
+    "text": "La force n'est pas donnée, elle s יכולゲームprend chaque jour."
+  },
+  {
+    "author": "Martin Luther King Jr.",
+    "text": "La vraie mesure d'un homme n'est pas comment il se comporte dans des moments où il est au sommet, mais comment il gère quand il est en bas."
+  },
+  {
+    "author": "Albert Camus",
+    "text": "La seule manière de traiter la vie, c'est d'aller de l'avant avec passion."
+  },
+  {
+    "author": "Victor Hugo",
+    "text": "Il n'y a rien de plus puissant qu'une idée dont l'heure est venue."
+  },
+  {
+    "author": "Honoré de Balzac",
+    "text": "Le premier pas vers la réussite est de s'avouer à soi-même son incompétence."
+  },
+  {
+    "author": "Léopold Sedar Senghor",
+    "text": "Le créateur est toujours un peu perdu dans son œuvre."
+  },
+  {
+    "author": "Aimé Césaire",
+    "text": "La poésie est la porte par laquelle l'homme sort des ténèbres de la solitude pour entrer dans le jour du partage."
+  },
+  {
+    "author": "Henri Bergson",
+    "text": "La joie est la plus belle de toutes les sensations."
+  },
+  {
+    "author": "Simone de Beauvoir",
+    "text": "On ne nait pas femme, on le devient."
+  },
+  {
+    "author": "Jean-Paul Sartre",
+    "text": "L'homme est condamné à être libre."
+  },
+  {
+    "author": "Albert Schweitzer",
+    "text": "Le bonheur est la satisfaction de l'âme en paix avec elle-même."
+  },
+  {
+    "author": "Mark Twain",
+    "text": "Le secret pour sortir de la difficulté, c'est d'imaginer comment on en sortirait si on était déjà sorti."
+  },
+  {
+    "author": "Ralph Waldo Emerson",
+    "text": "La vie n'est pas une vente aux enchères, et vous ne devez pas vivre aux appels du plus fort."
+  },
+  {
+    "author": "Henry David Thoreau",
+    "text": "La plupart des gens menent une vie de désespoir silencieux."
+  },
+  {
+    "author": "Maya Angelou",
+    "text": "Le courage, c'est la force du cœur, c'est se lancer dans l'inconnu."
+  },
+  {
+    "author": "Howard Thurman",
+    "text": "Ne vous divertissez jamais jusqu'à ce que vous ayez atteint ce que vous avez réellement choisi de faire."
+  },
+  {
+    "author": "Ted Hughes",
+    "text": "Ce dont vous avez vraiment besoin est un changement de point de vue."
+  },
+  {
+    "author": "Pablo Neruda",
+    "text": "Les choses ont leur vie, leur caractère."
+  },
+  {
+    "author": "Kahlil Gibran",
+    "text": "Le verbe 'aimer' est le verbe le plus dynamique dans le dictionnaire."
+  },
+  {
+    "author": "Osho",
+    "text": "Ne laissez personne d'autre que vous-même seul déterminer votre valeur."
+  },
+  {
+    "author": "Rumi",
+    "text": "Ce que vous recherchez est ici: recherchez-vous-même."
+  },
+  {
+    "author": "Deepak Chopra",
+    "text": "Le corps est une source infinie de santé, de guérison, et de vitalité."
+  },
+  {
+    "author": "Wayne Dyer",
+    "text": "Si tu changes la façon dont tu regardes les choses, les choses que tu regardes changeront."
+  },
+  {
+    "author": "Louise Hay",
+    "text": "Votre pensée crée votre réalité."
+  },
+  {
+    "author": "Paul Coelho",
+    "text": "Lorsque vous désirez quelque chose, l'univers entier conspire à vous aider."
+  },
+  {
+    "author": "Paulo Freire",
+    "text": "Personne n'est plus ignorant que celui qui refuse la connaissance."
+  },
+  {
+    "author": "Anthony de Mello",
+    "text": "La meilleure façon d'informer les autres, c'est par exemple."
+  },
+  {
+    "author": "Thich Nhat Hanh",
+    "text": "La paix est chaque pas."
+  },
+  {
+    "author": "Mère Teresa",
+    "text": "Ce que nous faisons pour nous-mêmes meurt avec nous, mais ce que nous faisons pour les autres et pour le monde reste."
+  },
+  {
+    "author": "Fyodor Dostoyevsky",
+    "text": "L'homme a été créé pour vivre la vie et non pour résoudre des équations numériques."
+  },
+  {
+    "author": "Leo Tolstoy",
+    "text": "Toy le bonheur de n'importe quelle situation, même la plus triste, en réalisant que tu aurais pu être plus malheureux."
+  },
+  {
+    "author": "Anton Chekhov",
+    "text": "L'homme est fait pour la paix et pour l'amour, et non pas pour le malheur et la guerre."
+  },
+  {
+    "author": "Vladimir Nabokov",
+    "text": "Ce que je vois maintenant dans le miroir, c'est tout un monde de possibilités."
+  },
+  {
+    "author": "James Baldwin",
+    "text": "Il n'y a qu'une solution, c'est vous tous."
+  },
+  {
+    "author": "Zora Neale Hurston",
+    "text": "Les gens qui se lamentent sur ce qu'ils n'ont pas ne recevront jamais rien."
+  },
+  {
+    "author": "Nella Larsen",
+    "text": "Le temps conduit à des changements imprévus."
+  },
+  {
+    "author": "Susan Sontag",
+    "text": "L'art est la plus belle des façons de savoir."
+  },
+  {
+    "author": "Joan Didion",
+    "text": "Nous n'écrivons jamais pour découvrir la vérité, mais pour nous rassurer."
+  },
+  {
+    "author": "Dalton Tran",
+    "text": "La force n'est pas donnée, elle s'prend chaque jour."
+  },
+  {
+    "author": "Benedict Cumberbatch",
+    "text": "Il n'y a pas de mécanisme divin pour séparer un acteur de son travail."
+  },
+  {
+    "author": "Olivier Rousteing",
+    "text": "J'ai l'intention de me battre pour la mode."
+  },
+  {
+    "author": "Larry King",
+    "text": "Nous devons trouver la paix et la tranquillité dans ce monde bruyant."
+  },
+  {
+    "author": "Vin Diesel",
+    "text": "Les risques sont une partie naturelle de la vie."
+  },
+  {
+    "author": "Chris Roberson",
+    "text": "Applications mobiles permettent à l'artisanat et au design de devenir accessible à tous."
+  },
+  {
+    "author": "Meredith Vieira",
+    "text": "Nous avons tous nos différents talents, et nous doivent nous aider mutuellement."
+  },
+  {
+    "author": "Martin Luther King Jr.",
+    "text": "La inactivité dans le moment du choix est un choix en soi."
+  },
+  {
+    "author": "Amelia Earhart",
+    "text": "L'aventure, c'est la vie."
+  },
+  {
+    "author": "Ramona Singer",
+    "text": "Soyez prêt à partager votre succès avec ceux qui sont autour de vous."
+  },
+  {
+    "author": "Eve Ensler",
+    "text": "Les plus grandes révolutions sont souvent des actes d'amour."
+  },
+  {
+    "author": "Kate Hudson",
+    "text": "Faites des erreurs et soyez audacieux."
+  },
+  {
+    "author": "Jack Husser",
+    "text": "L ففيdence est la clé pour réussir."
+  },
+  {
+    "author": "Ken Hakuta",
+    "text": "Vous devez toujours avoir une vision claire quand vous commencez quelque chose."
+  },
+  {
+    "author": "Hugh Dancy",
+    "text": "Recherchez la paix intérieure et appréciez le moment."
+  },
+  {
+    "author": "Jack Hanna",
+    "text": "Ne prenez pas la vie trop sérieusement, profitez du voyage."
+  },
+  {
+    "author": "Ralph Macchio",
+    "text": "La performance sur l'écran de cinéma dépend souvent de la collaboration."
+  },
+  {
+    "author": "Karla Southern",
+    "text": "Chaque moment mérite d'être savouré."
+  },
+  {
+    "author": "Mark Twain",
+    "text": "Ne laissez jamais quelqu'un d'autre vous définir."
+  },
+  {
+    "author": "Henry David Thoreau",
+    "text": "Le succès n'est pas la clé du bonheur, c'est la recherche de votre passion."
+  },
+  {
+    "author": "Maya Angelou",
+    "text": "Faites de votre vie une belle histoire."
+  },
+  {
+    "author": "Howard Thurman",
+    "text": "Ne laissez pas le passé définir votre avenir."
+  },
+  {
+    "author": "Ted Hughes",
+    "text": "La création est un processus de découverte."
+  },
+  {
+    "author": "Pablo Neruda",
+    "text": "L'amour est la source de l'inspiration."
+  },
+  {
+    "author": "Kahlil Gibran",
+    "text": "La vie offre des moments pour réfléchir."
+  },
+  {
+    "author": "Osho",
+    "text": "Soyez vous-même, car tout le monde d'autre est déjà pris."
+  },
+  {
+    "author": "Rumi",
+    "text": "Oubliez le passé et vivez le moment présent."
+  },
+  {
+    "author": "Deepak Chopra",
+    "text": "Le corps et l'esprit sont interconnectés."
+  },
+  {
+    "author": "Wayne Dyer",
+    "text": "Chaque problème est une opportunité déguisée."
+  },
+  {
+    "author": "Louise Hay",
+    "text": "La pensée positive attire des moments positifs."
+  },
+  {
+    "author": "Paul Coelho",
+    "text": "Suivez votre cœur, il sait ce que vous voulez vraiment."
+  },
+  {
+    "author": "Paulo Freire",
+    "text": "L'éducation est la clé vers la liberté."
+  },
+  {
+    "author": "Anthony de Mello",
+    "text": "La conscience est le chemin vers l'illumination."
+  },
+  {
+    "author": "Thich Nhat Hanh",
+    "text": "La paix commence par soi-même."
+  },
+  {
+    "author": "Mère Teresa",
+    "text": "Faites que chaque jour compte."
+  },
+  {
+    "author": "Fyodor Dostoyevsky",
+    "text": "L'espoir est une force puissante."
+  },
+  {
+    "author": "Leo Tolstoy",
+    "text": "La vérité réside dans la simplicité."
+  },
+  {
+    "author": "Anton Chekhov",
+    "text": "La beauté est partout, il suffit de savoir la voir."
+  },
+  {
+    "author": "Vladimir Nabokov",
+    "text": "L'inspiration vient de l'intérieur."
+  },
+  {
+    "author": "James Baldwin",
+    "text": "La liberté demande du courage."
+  },
+  {
+    "author": "Zora Neale Hurston",
+    "text": "Chaque personne a sa propre histoire unique."
+  },
+  {
+    "author": "Nella Larsen",
+    "text": "Les défis construisent le caractère."
+  },
+  {
+    "author": "Susan Sontag",
+    "text": "L'art est la réponse à l'âme."
+  },
+  {
+    "author": "Joan Didion",
+    "text": "Les mots ont le pouvoir de transformer."
+  },
+  {
+    "author": "Benedict Cumberbatch",
+    "text": "Chaque rôle est une nouvelle aventure."
+  },
+  {
+    "author": "Olivier Rousteing",
+    "text": "La mode est une forme d'expression."
+  },
+  {
+    "author": "Larry King",
+    "text": "La curiosité mène à la découverte."
+  },
+  {
+    "author": "Vin Diesel",
+    "text": "Bien courir demande de la discipline."
+  },
+  {
+    "author": "Chris Roberson",
+    "text": "La technologie rendant possible l'impossible."
+  },
+  {
+    "author": "Meredith Vieira",
+    "text": "L'empathie rend le monde mieux."
+  },
+  {
+    "author": "Martin Luther King Jr.",
+    "text": "L'amour pardonne toutes erreurs."
+  },
+  {
+    "author": "Amelia Earhart",
+    "text": "Ayez le courage de voler."
+  },
+  {
+    "author": "Ramona Singer",
+    "text": "Le succès est une expérience partagée."
+  },
+  {
+    "author": "Eve Ensler",
+    "text": "La transformation commence par l'unisexe."
+  },
+  {
+    "author": "Kate Hudson",
+    "text": "Vivez votre meilleur maintenant."
+  },
+  {
+    "author": "Jack Husser",
+    "text": "La confiance se construit avec le temps."
+  },
+  {
+    "author": "Ken Hakuta",
+    "text": "La vision rend le futur clair."
+  },
+  {
+    "author": "Hugh Dancy",
+    "text": "La paix intérieure est un trésor."
+  },
+  {
+    "author": "Jack Hanna",
+    "text": "Profitez de chaque moment."
+  },
+  {
+    "author": "Ralph Macchio",
+    "text": "La collaboration est la clé du succès."
+  },
+  {
+    "author": "Karla Southern",
+    "text": "Savourez chaque instant."
+  },
+  {
+    "author": "Mark Twain",
+    "text": "Ne laissez jamais quelqu'un d'autre définir votre histoire."
+  },
+  {
+    "author": "Henry David Thoreau",
+    "text": "Cultivez votre passion, c'est la clé du bonheur."
+  },
+  {
+    "author": "Maya Angelou",
+    "text": "Votre histoire est unique, faites-la belle."
+  },
+  {
+    "author": "Howard Thurman",
+    "text": "Ne laissez pas le passé dénigrer votre avenir."
+  },
+  {
+    "author": "Ted Hughes",
+    "text": "La création est une aventure de découverte."
+  },
+  {
+    "author": "Pablo Neruda",
+    "text": "L'amour inspira l'inspiration."
+  },
+  {
+    "author": "Kahlil Gibran",
+    "text": "Chaque moment est une envolée de découverte."
+  },
+  {
+    "author": "Osho",
+    "text": "Chaque personne est unique, soyez vous-même."
+  },
+  {
+    "author": "Rumi",
+    "text": "Le présent est un cadeau, purement parfait."
+  },
+  {
+    "author": "Deepak Chopra",
+    "text": "La santé commence par l'esprit."
+  },
+  {
+    "author": "Wayne Dyer",
+    "text": "Chaque problème est une chance de grandir."
+  },
+  {
+    "author": "Louise Hay",
+    "text": "La pensée positive attire le positif."
+  },
+  {
+    "author": "Paul Coelho",
+    "text": "Suivez votre cœur, il connaît le chemin."
+  },
+  {
+    "author": "Paulo Freire",
+    "text": "L'éducation libère l'esprit."
+  },
+  {
+    "author": "Anthony de Mello",
+    "text": "La conscience est une lampe guide."
+  },
+  {
+    "author": "Thich Nhat Hanh",
+    "text": "Le calme intérieur est la clé de la paix."
+  },
+  {
+    "author": "Mère Teresa",
+    "text": "Aimez comme si c'était la dernière fois."
+  },
+  {
+    "author": "Fyodor Dostoyevsky",
+    "text": "L'espoir est une étoile guide."
+  },
+  {
+    "author": "Leo Tolstoy",
+    "text": "La vérité est simple, mais profonde."
+  },
+  {
+    "author": "Anton Chekhov",
+    "text": "La beauté se trouve dans les détails."
+  },
+  {
+    "author": "Vladimir Nabokov",
+    "text": "Faites de chaque mot une œuvre d'art."
+  },
+  {
+    "author": "James Baldwin",
+    "text": "La liberté est un choix courageux."
+  },
+  {
+    "author": "Zora Neale Hurston",
+    "text": "Chaque personne a une histoire essentielle à raconter."
+  },
+  {
+    "author": "Nella Larsen",
+    "text": "Les défis sont des étapes de croissance."
+  },
+  {
+    "author": "Susan Sontag",
+    "text": "L'art est un langage universel."
+  },
+  {
+    "author": "Joan Didion",
+    "text": "Les mots peuvent transformer des vies."
+  },
+  {
+    "author": "Benedict Cumberbatch",
+    "text": "Chaque rôle est une nouvelle aventure."
+  },
+  {
+    "author": "Olivier Rousteing",
+    "text": "La mode est une forme d'expression audacieuse."
+  },
+  {
+    "author": "Larry King",
+    "text": "La curiosité ouvre la voie à la découverte."
+  },
+  {
+    "author": "Vin Diesel",
+    "text": "La discipline mènes à l'excellence."
+  },
+  {
+    "author": "Chris Roberson",
+    "text": "La technologie rend possible l'impossible."
+  },
+  {
+    "author": "Meredith Vieira",
+    "text": "L'empathie rend le monde meilleur."
+  },
+  {
+    "author": "Martin Luther King Jr.",
+    "text": "L'amour conquiert toutes choses."
+  },
+  {
+    "author": "Amelia Earhart",
+    "text": "Ayez le courage de réaliser vos rêves."
+  },
+  {
+    "author": "Ramona Singer",
+    "text": "Le succès est une aventure partagée."
+  },
+  {
+    "author": "Eve Ensler",
+    "text": "La transformation commence par la conscience."
+  },
+  {
+    "author": "Kate Hudson",
+    "text": "Vivez votre meilleur maintenant."
+  },
+  {
+    "author": "Jack Husser",
+    "text": "La confiance se construit avec le temps."
+  },
+  {
+    "author": "Ken Hakuta",
+    "text": "La vision rend le futur clair."
+  },
+  {
+    "author": "Hugh Dancy",
+    "text": "La paix intérieure est un trésor précieux."
+  },
+  {
+    "author": "Jack Hanna",
+    "text": "Profitez de chaque moment."
+  },
+  {
+    "author": "Ralph Macchio",
+    "text": "La collaboration est la clé du succès."
+  },
+  {
+    "author": "Karla Southern",
+    "text": "Savourez chaque instant de la vie."
+  },
+  {
+    "author": "Dalton Tran",
+    "text": "La force est une discipline quotidienne."
+  },
+  {
+    "author": "Dalton Tran",
+    "text": "Tout commence par une décision."
+  },
+  {
+    "author": "Dalton Tran",
+    "text": "La persévérance surmonte les obstacles."
+  }
 ]

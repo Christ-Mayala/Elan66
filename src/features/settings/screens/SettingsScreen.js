@@ -165,10 +165,13 @@ export function SettingsScreen({ navigation }) {
             const res = await importAllDataFromJson({ replaceAll: true });
             if (res?.canceled) return;
             const habits = await refreshHabits();
-            if (!isExpoGo()) await syncDailyCheckinsForHabits(habits);
+            if (!isExpoGo()) {
+              await syncDailyCheckinsForHabits(habits);
+              await syncQuoteNotifications();
+            }
             Alert.alert(
               'Import terminé',
-              `Habitudes: ${res.counts?.habits || 0}\nLogs: ${res.counts?.logs || 0}\nSOS: ${res.counts?.sos || 0}\nJournal: ${res.counts?.diary || 0}`
+              `Habitudes: ${res.counts?.habits || 0}\nLogs: ${res.counts?.logs || 0}\nSOS: ${res.counts?.sos || 0}\nJournal: ${res.counts?.diary || 0}\nNotes: ${res.counts?.notes || 0}`
             );
           } catch (e) {
             Alert.alert('Erreur', domainErrorMessageFr(String(e.message || e)));
@@ -370,7 +373,7 @@ export function SettingsScreen({ navigation }) {
           <View style={{ padding: theme.spacing.m, paddingTop: 0, gap: 10 }}>
             <Pressable onPress={onExport} style={styles.rowLink}>
               <View style={[styles.rowIcon, { backgroundColor: 'rgba(34,211,238,0.14)' }]}>
-                <Ionicons name="download" size={18} color={theme.colors.accent2} />
+                <Ionicons name="download-outline" size={18} color={theme.colors.accent2} />
               </View>
               <View style={{ flex: 1 }}>
                 <Text variant="subtitle">Exporter</Text>
@@ -383,7 +386,7 @@ export function SettingsScreen({ navigation }) {
 
             <Pressable onPress={onImport} style={[styles.rowLink, styles.rowDanger]}>
               <View style={[styles.rowIcon, { backgroundColor: 'rgba(239,68,68,0.14)' }]}>
-                <Ionicons name="upload" size={18} color={theme.colors.danger} />
+                <Ionicons name="cloud-upload-outline" size={18} color={theme.colors.danger} />
               </View>
               <View style={{ flex: 1 }}>
                 <Text variant="subtitle">Importer</Text>

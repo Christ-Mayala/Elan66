@@ -3,7 +3,7 @@ import * as Sharing from 'expo-sharing';
 import * as DocumentPicker from 'expo-document-picker';
 import { getDb, wipeAllData } from '../db/database';
 
-export const EXPORT_SCHEMA_VERSION = 2;
+export const EXPORT_SCHEMA_VERSION = 3;
 
 export const exportAllDataToJson = async () => {
   const db = await getDb();
@@ -13,11 +13,12 @@ export const exportAllDataToJson = async () => {
   const sos = await db.getAllAsync('SELECT * FROM sos_events ORDER BY date ASC;');
   const settings = await db.getAllAsync('SELECT * FROM app_settings ORDER BY key ASC;');
   const diary = await db.getAllAsync('SELECT * FROM diary_entries ORDER BY date ASC;');
+  const notes = await db.getAllAsync('SELECT * FROM notes ORDER BY updated_at ASC;');
 
   const payload = {
     schemaVersion: EXPORT_SCHEMA_VERSION,
     exportedAt: new Date().toISOString(),
-    data: { habits, logs, sos, settings, diary },
+    data: { habits, logs, sos, settings, diary, notes },
   };
 
   const json = JSON.stringify(payload, null, 2);
@@ -38,16 +39,20 @@ export const exportAllDataToJson = async () => {
 
 const validatePayload = (payload) => {
   if (!payload || typeof payload !== 'object') throw new Error('INVALID_EXPORT');
-  if (payload.schemaVersion !== 1 && payload.schemaVersion !== EXPORT_SCHEMA_VERSION) throw new Error('UNSUPPORTED_SCHEMA');
+  if (![1, 2, 3].includes(payload.schemaVersion)) throw new Error('UNSUPPORTED_SCHEMA');
   const d = payload.data;
   if (!d || typeof d !== 'object') throw new Error('INVALID_EXPORT');
   if (!Array.isArray(d.habits) || !Array.isArray(d.logs) || !Array.isArray(d.sos) || !Array.isArray(d.settings)) {
     throw new Error('INVALID_EXPORT');
   }
   if (payload.schemaVersion === 1) {
-    return { ...d, diary: [] };
+    return { ...d, diary: [], notes: [] };
   }
   if (!Array.isArray(d.diary)) throw new Error('INVALID_EXPORT');
+  if (payload.schemaVersion === 2) {
+    return { ...d, notes: [] };
+  }
+  if (!Array.isArray(d.notes)) throw new Error('INVALID_EXPORT');
   return d;
 };
 
@@ -62,10 +67,11 @@ export const importAllDataFromJson = async ({ replaceAll = true } = {}) => {
   const payload = JSON.parse(json);
   const data = validatePayload(payload);
 
-  const db = await getDb();
+  let db = await getDb();
 
   if (replaceAll) {
     await wipeAllData();
+    db = await getDb();
   }
 
   await db.execAsync('PRAGMA foreign_keys = OFF;');
@@ -73,8 +79,8 @@ export const importAllDataFromJson = async ({ replaceAll = true } = {}) => {
   for (const h of data.habits) {
     await db.runAsync(
       `
-      INSERT INTO habits(id,name,description,replacement,commitment,discipline_mode,duration_days,start_date,status,created_at,updated_at,completed_at,archived_at)
-      VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)
+      INSERT INTO habits(id,name,description,replacement,commitment,discipline_mode,duration_days,start_date,status,important,created_at,updated_at,completed_at,archived_at)
+      VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)
       ON CONFLICT(id) DO UPDATE SET
         name=excluded.name,
         description=excluded.description,
@@ -84,6 +90,7 @@ export const importAllDataFromJson = async ({ replaceAll = true } = {}) => {
         duration_days=excluded.duration_days,
         start_date=excluded.start_date,
         status=excluded.status,
+        important=excluded.important,
         created_at=excluded.created_at,
         updated_at=excluded.updated_at,
         completed_at=excluded.completed_at,
@@ -99,6 +106,7 @@ export const importAllDataFromJson = async ({ replaceAll = true } = {}) => {
         h.duration_days,
         h.start_date,
         h.status,
+        Number(h.important) ? 1 : 0,
         h.created_at,
         h.updated_at,
         h.completed_at,
@@ -165,6 +173,23 @@ export const importAllDataFromJson = async ({ replaceAll = true } = {}) => {
     );
   }
 
+  for (const n of data.notes || []) {
+    await db.runAsync(
+      `
+      INSERT INTO notes(id,title,body,pinned,created_at,updated_at,deleted_at)
+      VALUES(?,?,?,?,?,?,?)
+      ON CONFLICT(id) DO UPDATE SET
+        title=excluded.title,
+        body=excluded.body,
+        pinned=excluded.pinned,
+        created_at=excluded.created_at,
+        updated_at=excluded.updated_at,
+        deleted_at=excluded.deleted_at;
+    `,
+      [n.id, n.title, n.body, n.pinned, n.created_at, n.updated_at, n.deleted_at]
+    );
+  }
+
   await db.execAsync('PRAGMA foreign_keys = ON;');
 
   return {
@@ -175,6 +200,7 @@ export const importAllDataFromJson = async ({ replaceAll = true } = {}) => {
       sos: data.sos.length,
       settings: data.settings.length,
       diary: (data.diary || []).length,
+      notes: (data.notes || []).length,
     },
   };
 };
