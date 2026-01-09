@@ -185,6 +185,15 @@ export function HomeScreen({ navigation }) {
           </Text>
         </AnimatedPressable>
 
+        <AnimatedPressable onPress={() => navigation.navigate('Repere')} style={[styles.quickAction, { backgroundColor: 'rgba(139,92,246,0.10)' }]} hitSlop={10}>
+          <View style={[styles.quickIcon, { backgroundColor: theme.colors.accent }]}>
+            <Ionicons name="compass" size={22} color={theme.colors.white} />
+          </View>
+          <Text variant="caption" style={styles.quickLabel}>
+            Répère
+          </Text>
+        </AnimatedPressable>
+
         <AnimatedPressable
           onPress={() => {
             if (items.length === 1) openSos(items[0]);

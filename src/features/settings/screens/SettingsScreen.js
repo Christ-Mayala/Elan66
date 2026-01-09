@@ -13,19 +13,30 @@ import {
   configureNotifications,
   getDailyReminderTime,
   getNotifPermissions,
+  getQuoteSchedule,
   requestNotifPermissions,
   setDailyReminderTime,
+  setQuoteSchedule,
   syncDailyCheckinsForHabits,
+  syncQuoteNotifications,
 } from '../../../core/services/notifications';
 import { isExpoGo } from '../../../core/utils/runtime';
 import { useHabits } from '../../habits/context/HabitsContext';
+import { Segmented } from '../../notes/components/segmented';
+import { quotesCount } from '../../../core/services/quotesData';
 
-export function SettingsScreen() {
+export function SettingsScreen({ navigation }) {
   const { state, refreshHabits } = useHabits();
 
   const [hour, setHour] = useState('20');
   const [minute, setMinute] = useState('30');
   const [notifGranted, setNotifGranted] = useState(null);
+
+  const [qMode, setQMode] = useState('morning');
+  const [qMorningHour, setQMorningHour] = useState('09');
+  const [qMorningMinute, setQMorningMinute] = useState('00');
+  const [qEveningHour, setQEveningHour] = useState('21');
+  const [qEveningMinute, setQEveningMinute] = useState('00');
 
   useEffect(() => {
     (async () => {
@@ -39,6 +50,15 @@ export function SettingsScreen() {
           setNotifGranted(Boolean(p?.granted || p?.ios?.status));
         } catch {}
       }
+
+      try {
+        const qs = await getQuoteSchedule();
+        setQMode(qs.mode);
+        setQMorningHour(String(qs.morning.hour).padStart(2, '0'));
+        setQMorningMinute(String(qs.morning.minute).padStart(2, '0'));
+        setQEveningHour(String(qs.evening.hour).padStart(2, '0'));
+        setQEveningMinute(String(qs.evening.minute).padStart(2, '0'));
+      } catch {}
     })();
   }, []);
 
@@ -85,6 +105,38 @@ export function SettingsScreen() {
         return;
       }
       Alert.alert('OK', `Heure enregistrée : ${String(t.hour).padStart(2, '0')}:${String(t.minute).padStart(2, '0')}`);
+    } catch (e) {
+      Alert.alert('Erreur', domainErrorMessageFr(String(e.message || e)));
+    }
+  };
+
+  const onSaveQuoteSchedule = async () => {
+    try {
+      const next = await setQuoteSchedule({
+        mode: qMode,
+        morning: { hour: qMorningHour, minute: qMorningMinute },
+        evening: { hour: qEveningHour, minute: qEveningMinute },
+        daysAhead: 14,
+      });
+
+      if (isExpoGo()) {
+        Alert.alert('OK', `Répère enregistré : ${next.mode === 'off' ? 'off' : 'actif'}. (Notifications limitées dans Expo Go)`);
+        return;
+      }
+
+      await configureNotifications();
+      const p = await requestNotifPermissions();
+      const granted = Boolean(p?.granted || p?.ios?.status);
+      setNotifGranted(granted);
+
+      if (!granted) {
+        Alert.alert('Autorisation requise', 'Active les notifications dans les réglages système du téléphone.');
+        return;
+      }
+
+      await syncQuoteNotifications();
+
+      Alert.alert('OK', `Répère : ${next.mode === 'morning' ? 'matin' : next.mode === 'evening' ? 'soir' : next.mode === 'both' ? 'matin + soir' : 'off'}.`);
     } catch (e) {
       Alert.alert('Erreur', domainErrorMessageFr(String(e.message || e)));
     }
@@ -202,6 +254,100 @@ export function SettingsScreen() {
               </Text>
               <Ionicons name="chevron-forward" size={18} color={theme.colors.textMuted} />
             </View>
+          </View>
+        </Card>
+
+        <Card style={{ padding: 0 }}>
+          <View style={styles.blockHeader}>
+            <View style={[styles.blockIcon, { backgroundColor: 'rgba(139,92,246,0.14)' }]}>
+              <Ionicons name="compass" size={18} color={theme.colors.accent} />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text variant="subtitle">Répère</Text>
+              <Text variant="muted" style={{ marginTop: 2 }}>
+                Citations matin / soir (par défaut 09:00)
+              </Text>
+            </View>
+          </View>
+
+          <View style={{ padding: theme.spacing.m, paddingTop: 0, gap: 12 }}>
+            {quotesCount() ? null : (
+              <View style={styles.warning}>
+                <Ionicons name="warning" size={16} color={theme.colors.warn} />
+                <Text variant="muted" style={{ flex: 1, color: theme.colors.warn }}>
+                  Aucune citation n'est encore enregistrée. Le fichier actuel contient des auteurs, mais pas de citations.
+                </Text>
+              </View>
+            )}
+
+            <Text variant="muted">Fréquence</Text>
+            <Segmented
+              value={qMode}
+              options={[
+                { value: 'morning', label: 'Matin' },
+                { value: 'evening', label: 'Soir' },
+                { value: 'both', label: 'Matin+Soir' },
+                { value: 'off', label: 'Off' },
+              ]}
+              onChange={setQMode}
+            />
+
+            {(qMode === 'morning' || qMode === 'both') && (
+              <View style={{ flexDirection: 'row', gap: 10 }}>
+                <View style={{ flex: 1 }}>
+                  <Text variant="muted">Matin (H)</Text>
+                  <TextInput value={qMorningHour} onChangeText={setQMorningHour} keyboardType="number-pad" style={styles.input} />
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text variant="muted">Matin (M)</Text>
+                  <TextInput value={qMorningMinute} onChangeText={setQMorningMinute} keyboardType="number-pad" style={styles.input} />
+                </View>
+              </View>
+            )}
+
+            {(qMode === 'evening' || qMode === 'both') && (
+              <View style={{ flexDirection: 'row', gap: 10 }}>
+                <View style={{ flex: 1 }}>
+                  <Text variant="muted">Soir (H)</Text>
+                  <TextInput value={qEveningHour} onChangeText={setQEveningHour} keyboardType="number-pad" style={styles.input} />
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text variant="muted">Soir (M)</Text>
+                  <TextInput value={qEveningMinute} onChangeText={setQEveningMinute} keyboardType="number-pad" style={styles.input} />
+                </View>
+              </View>
+            )}
+
+            <Button title="Enregistrer Répère" onPress={onSaveQuoteSchedule} disabled={!quotesCount() && qMode !== 'off'} icon="save" />
+          </View>
+        </Card>
+
+        <Card style={{ padding: 0 }}>
+          <View style={styles.blockHeader}>
+            <View style={[styles.blockIcon, { backgroundColor: 'rgba(241,245,249,0.08)' }]}>
+              <Ionicons name="archive" size={18} color={theme.colors.textMuted} />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text variant="subtitle">Archives</Text>
+              <Text variant="muted" style={{ marginTop: 2 }}>
+                Visualiser les habitudes archivées
+              </Text>
+            </View>
+          </View>
+
+          <View style={{ padding: theme.spacing.m, paddingTop: 0, gap: 10 }}>
+            <Pressable onPress={() => navigation.navigate('ArchivedHabits')} style={styles.rowLink}>
+              <View style={[styles.rowIcon, { backgroundColor: 'rgba(241,245,249,0.08)' }]}>
+                <Ionicons name="archive-outline" size={18} color={theme.colors.textMuted} />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text variant="subtitle">Habitudes archivées</Text>
+                <Text variant="muted" numberOfLines={1}>
+                  Ouvrir la liste
+                </Text>
+              </View>
+              <Ionicons name="chevron-forward" size={18} color={theme.colors.textMuted} />
+            </Pressable>
           </View>
         </Card>
 
