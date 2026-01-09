@@ -3,14 +3,22 @@
     "name": "Elan66",
     "slug": "Elan66",
     "version": "1.0.0",
+    "plugins": [
+      [
+        "expo-dev-client",
+        {
+          "launchMode": "most-recent"
+        }
+      ],
+      "expo-font"
+    ],
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
-    "newArchEnabled": false,
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#0B0E13"
+      "backgroundColor": "#070A12"
     },
     "ios": {
       "supportsTablet": true
@@ -18,12 +26,18 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#0B0E13"
+        "backgroundColor": "#070A12"
       },
-      "edgeToEdgeEnabled": false
+      "edgeToEdgeEnabled": false,
+      "package": "com.christ_mayala.Elan66"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "f5668238-be5d-4466-9fc2-9a2bcd1827c5"
+      }
     }
   }
 }

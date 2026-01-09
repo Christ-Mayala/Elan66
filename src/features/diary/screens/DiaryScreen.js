@@ -1,9 +1,12 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Alert, Pressable, ScrollView, StyleSheet, TextInput, View } from 'react-native';
+import { Alert, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { Screen } from '../../../core/ui/Screen';
+import { Enter } from '../../../core/ui/Enter';
 import { Text } from '../../../core/ui/Text';
 import { Card } from '../../../core/ui/Card';
 import { Button } from '../../../core/ui/Button';
+import { NotepadInput } from '../../../core/ui/NotepadInput';
 import { theme } from '../../../core/theme/theme';
 import { addDaysLocal, diffDaysLocal, toLocalDateId } from '../../../core/utils/dateUtils';
 import { getDiaryEntryByDate, listRecentDiaryEntries, upsertDiaryEntry } from '../data/diaryRepo';
@@ -44,8 +47,18 @@ export function DiaryScreen() {
 
   return (
     <Screen>
-      <ScrollView contentContainerStyle={{ gap: 12, paddingBottom: 24 }} keyboardShouldPersistTaps="handled">
-        <Text variant="title">Journal</Text>
+      <Enter style={{ flex: 1 }}>
+        <ScrollView contentContainerStyle={{ gap: 12, paddingBottom: 120 }} keyboardShouldPersistTaps="handled">
+        <View style={styles.topBar}>
+          <View style={styles.avatar}>
+            <Ionicons name="book" size={18} color={theme.colors.textMuted} />
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text variant="muted">Écriture</Text>
+            <Text variant="display">Journal</Text>
+          </View>
+        </View>
+
         <Text variant="muted">Court. Privé. Sans analyse automatique.</Text>
 
         <Card>
@@ -62,14 +75,13 @@ export function DiaryScreen() {
             </Pressable>
           </View>
 
-          <TextInput
+          <NotepadInput
             value={text}
             onChangeText={setText}
             placeholder="Écrire sans filtre. Quelques lignes suffisent."
-            placeholderTextColor={theme.colors.textMuted}
-            style={[styles.input, styles.multiline]}
-            multiline
             editable={!isFuture}
+            minHeight={220}
+            style={{ marginTop: 12, ...theme.shadow.card }}
           />
 
           <View style={{ marginTop: 10 }}>
@@ -96,25 +108,27 @@ export function DiaryScreen() {
             )}
           </View>
         </Card>
-      </ScrollView>
+        </ScrollView>
+      </Enter>
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  input: {
-    marginTop: 10,
+  topBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  avatar: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     backgroundColor: theme.colors.surface2,
-    borderRadius: theme.radius.m,
     borderWidth: 1,
     borderColor: theme.colors.border,
-    paddingHorizontal: 12,
-    paddingVertical: 12,
-    color: theme.colors.text,
-  },
-  multiline: {
-    minHeight: 170,
-    textAlignVertical: 'top',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   dateRow: {
     flexDirection: 'row',

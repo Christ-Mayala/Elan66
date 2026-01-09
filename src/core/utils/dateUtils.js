@@ -46,3 +46,13 @@ export const phaseProgress = (dayIndex) => {
   const end = phase === 1 ? 22 : phase === 2 ? 44 : 66;
   return { phase, inPhase: dayIndex - start + 1, phaseTotal: end - start + 1, start, end };
 };
+
+export const formatDate = (dateId, locale = 'fr-FR') => {
+  const date = new Date(dateId);
+  return date.toLocaleDateString(locale, {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  });
+};

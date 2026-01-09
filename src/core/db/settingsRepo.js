@@ -2,6 +2,7 @@ import { getDb } from './database';
 
 export const SettingsKeys = {
   dailyReminderTime: 'dailyReminderTime',
+  onboardingDone: 'onboardingDone',
 };
 
 export const getSetting = async (key) => {

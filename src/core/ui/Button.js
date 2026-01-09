@@ -23,20 +23,26 @@ export function Button({ title, onPress, variant = 'primary', disabled }) {
 
 const styles = StyleSheet.create({
   base: {
-    borderRadius: theme.radius.m,
-    paddingVertical: 12,
-    paddingHorizontal: 14,
+    minHeight: 48,
+    borderRadius: theme.radius.l,
+    paddingVertical: 13,
+    paddingHorizontal: 16,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  primary: { backgroundColor: theme.colors.accent },
-  primaryText: { color: theme.colors.black },
+  primary: {
+    backgroundColor: theme.colors.accent,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.10)',
+    ...theme.shadow.card,
+  },
+  primaryText: { color: theme.colors.white },
   ghost: {
-    backgroundColor: 'transparent',
+    backgroundColor: 'rgba(255,255,255,0.04)',
     borderWidth: 1,
     borderColor: theme.colors.border,
   },
   ghostText: { color: theme.colors.text },
-  pressed: { opacity: 0.85 },
-  disabled: { opacity: 0.45 },
+  pressed: { opacity: 0.92, transform: [{ scale: 0.98 }] },
+  disabled: { opacity: 0.5 },
 });
