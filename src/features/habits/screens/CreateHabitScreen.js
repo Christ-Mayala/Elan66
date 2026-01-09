@@ -8,7 +8,7 @@ import { Button } from '../../../core/ui/Button';
 import { Card } from '../../../core/ui/Card';
 import { theme } from '../../../core/theme/theme';
 import { DisciplineMode, GOLD_STANDARD_DAYS, PHASE_LENGTH_DAYS, nudge66Text } from '../../../core/utils/constants';
-import { addDaysLocal, clamp, toLocalDateId } from '../../../core/utils/dateUtils';
+import { addDaysLocal, clamp, fromLocalDateId, toLocalDateId } from '../../../core/utils/dateUtils';
 import { clampInt, nonEmpty } from '../../../core/utils/validation';
 import { useHabits } from '../context/HabitsContext';
 import { Segmented } from '../../notes/components/segmented';
@@ -33,8 +33,8 @@ export function CreateHabitScreen({ navigation }) {
   const durationValue = useMemo(() => clampInt(durationDays, 7, 365), [durationDays]);
   const today = useMemo(() => toLocalDateId(new Date()), []);
   const endDate = useMemo(() => {
-    const date = addDaysLocal(today, Math.max(0, durationValue - 1));
-    return new Date(date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+    const dateId = addDaysLocal(today, Math.max(0, durationValue - 1));
+    return fromLocalDateId(dateId).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
   }, [today, durationValue]);
 
   const phase3Start = useMemo(() => {

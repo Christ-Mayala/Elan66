@@ -256,6 +256,7 @@ export function HomeScreen({ navigation }) {
                     <Text variant="subtitle" numberOfLines={1} style={{ flex: 1 }}>
                       {h.name}
                     </Text>
+                    {h.important ? <Ionicons name="star" size={16} color="#F59E0B" /> : null}
                     <Ionicons name="arrow-forward" size={16} color={theme.colors.textMuted} />
                   </View>
                   <Text variant="muted" numberOfLines={2} style={{ marginTop: 8 }}>
@@ -290,6 +291,7 @@ export function HomeScreen({ navigation }) {
     <Screen>
       <FlatList
         data={items}
+        showsVerticalScrollIndicator={false}
         keyExtractor={(it) => it.id}
         contentContainerStyle={{ gap: 12, paddingBottom: 120 }}
         ListHeaderComponent={header}
@@ -324,6 +326,7 @@ export function HomeScreen({ navigation }) {
                       Phase {item.phase} · Jour {item.dayIndex}/{item.duration_days}
                     </Text>
                   </View>
+                  {item.important ? <Ionicons name="star" size={16} color="#F59E0B" /> : null}
                   <Pressable
                     onPress={(e) => {
                       e.stopPropagation?.();

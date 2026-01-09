@@ -1,5 +1,7 @@
+import { Platform } from 'react-native';
 import { getSetting, setSetting, SettingsKeys } from '../db/settingsRepo';
 import { isExpoGo } from '../utils/runtime';
+import { DisciplineMode } from '../utils/constants';
 
 export const NOTIF_CATEGORY_DAILY = 'daily_checkin';
 
@@ -17,21 +19,31 @@ export const configureNotifications = async () => {
   const Notifications = await getNotifications();
   if (!Notifications) return;
 
+  if (Platform.OS === 'android') {
+    await Notifications.setNotificationChannelAsync('daily', {
+      name: 'Rappels',
+      importance: Notifications.AndroidImportance.HIGH,
+      vibrationPattern: [0, 250, 250, 250],
+      enableVibrate: true,
+      lockscreenVisibility: Notifications.AndroidNotificationVisibility.PUBLIC,
+    });
+  }
+
   await Notifications.setNotificationCategoryAsync(NOTIF_CATEGORY_DAILY, [
     {
       identifier: 'checkin_success',
       buttonTitle: '✅',
-      options: { opensAppToForeground: false },
+      options: { opensAppToForeground: true },
     },
     {
       identifier: 'checkin_resisted',
       buttonTitle: '⚠️',
-      options: { opensAppToForeground: false },
+      options: { opensAppToForeground: true },
     },
     {
       identifier: 'checkin_fail',
       buttonTitle: '❌',
-      options: { opensAppToForeground: false },
+      options: { opensAppToForeground: true },
     },
   ]);
 
@@ -42,6 +54,12 @@ export const configureNotifications = async () => {
       shouldSetBadge: false,
     }),
   });
+};
+
+export const getNotifPermissions = async () => {
+  const Notifications = await getNotifications();
+  if (!Notifications) return { granted: false };
+  return Notifications.getPermissionsAsync();
 };
 
 export const requestNotifPermissions = async () => {
@@ -79,16 +97,23 @@ export const cancelScheduledById = async (id) => {
   } catch {}
 };
 
-export const scheduleDailyCheckinForHabit = async ({ habitId, habitName, hour, minute }) => {
+export const scheduleDailyCheckinForHabit = async ({ habitId, habitName, hour, minute, disciplineMode }) => {
   const Notifications = await getNotifications();
   if (!Notifications) return null;
 
   const trigger = { hour, minute, repeats: true };
+  const mode = disciplineMode === DisciplineMode.strict ? DisciplineMode.strict : DisciplineMode.soft;
+  const body =
+    mode === DisciplineMode.strict
+      ? "Check-in : valide ta journée ✅ / ⚠️ / ❌"
+      : "Valide ta journée : ✅ / ⚠️ / ❌";
+
   const id = await Notifications.scheduleNotificationAsync({
     content: {
       title: habitName || 'Check-in',
-      body: "Valide ta journée : ✅ / ⚠️ / ❌",
+      body,
       categoryIdentifier: NOTIF_CATEGORY_DAILY,
+      channelId: Platform.OS === 'android' ? 'daily' : undefined,
       data: { kind: 'dailyCheckin', habitId },
     },
     trigger,
@@ -108,7 +133,7 @@ export const syncDailyCheckinsForHabits = async (habits) => {
     if (existing) {
       await cancelScheduledById(existing);
     }
-    await scheduleDailyCheckinForHabit({ habitId: h.id, habitName: h.name, hour, minute });
+    await scheduleDailyCheckinForHabit({ habitId: h.id, habitName: h.name, hour, minute, disciplineMode: h.discipline_mode });
   }
 };
 
@@ -118,15 +143,22 @@ export const cancelAllForHabit = async (habitId) => {
   await setSetting(keyDaily(habitId), null);
 };
 
-export const scheduleNoTwoDaysNotification = async ({ habitId, habitName, date, hour, minute }) => {
+export const scheduleNoTwoDaysNotification = async ({ habitId, habitName, date, hour, minute, disciplineMode }) => {
   const Notifications = await getNotifications();
   if (!Notifications) return null;
 
   const fire = new Date(date.getFullYear(), date.getMonth(), date.getDate(), hour, minute, 0, 0);
+  const mode = disciplineMode === DisciplineMode.strict ? DisciplineMode.strict : DisciplineMode.soft;
+  const body =
+    mode === DisciplineMode.strict
+      ? "Ne manque jamais deux jours de suite. Aujourd'hui, tu tiens."
+      : "Ne manque jamais deux jours de suite. C'est aujourd'hui que se joue ta victoire.";
+
   const id = await Notifications.scheduleNotificationAsync({
     content: {
       title: habitName || 'Ne manque jamais deux jours',
-      body: "Ne manque jamais deux jours de suite. C'est aujourd'hui que se joue ta victoire.",
+      body,
+      channelId: Platform.OS === 'android' ? 'daily' : undefined,
       data: { kind: 'noTwoDays', habitId },
     },
     trigger: fire,
@@ -134,11 +166,11 @@ export const scheduleNoTwoDaysNotification = async ({ habitId, habitName, date, 
   return id;
 };
 
-export const scheduleNoTwoDaysForTomorrow = async ({ habitId, habitName, tomorrowDateId }) => {
+export const scheduleNoTwoDaysForTomorrow = async ({ habitId, habitName, tomorrowDateId, disciplineMode }) => {
   const { hour, minute } = await getDailyReminderTime();
   const [y, m, d] = tomorrowDateId.split('-').map((x) => Number(x));
   const fireDate = new Date(y, m - 1, d);
-  const id = await scheduleNoTwoDaysNotification({ habitId, habitName, date: fireDate, hour, minute });
+  const id = await scheduleNoTwoDaysNotification({ habitId, habitName, date: fireDate, hour, minute, disciplineMode });
   await setSetting(keyNoTwoDays(habitId, tomorrowDateId), id);
   return id;
 };

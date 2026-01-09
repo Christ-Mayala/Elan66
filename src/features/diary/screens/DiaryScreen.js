@@ -48,7 +48,7 @@ export function DiaryScreen() {
   return (
     <Screen>
       <Enter style={{ flex: 1 }}>
-        <ScrollView contentContainerStyle={{ gap: 12, paddingBottom: 120 }} keyboardShouldPersistTaps="handled">
+        <ScrollView contentContainerStyle={{ gap: 12, paddingBottom: 120 }} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
         <View style={styles.topBar}>
           <View style={styles.avatar}>
             <Ionicons name="book" size={18} color={theme.colors.textMuted} />

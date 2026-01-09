@@ -104,7 +104,7 @@ export function StatsScreen() {
   return (
       <Screen>
         <Enter style={{ flex: 1 }}>
-          <ScrollView contentContainerStyle={{ gap: 12, paddingBottom: 120 }} keyboardShouldPersistTaps="handled">
+          <ScrollView contentContainerStyle={{ gap: 12, paddingBottom: 120 }} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
             <View style={styles.topBar}>
               <View style={styles.titleContainer}>
                 {/*<View style={styles.statsIconContainer}>*/}

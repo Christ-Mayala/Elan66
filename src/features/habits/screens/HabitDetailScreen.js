@@ -111,6 +111,7 @@ export function HabitDetailScreen({ route, navigation }) {
     saveNoteForDay,
     recordSosToday,
     getSosEligibility,
+    setImportant,
     archive,
     remove,
   } = useHabits();
@@ -303,6 +304,16 @@ export function HabitDetailScreen({ route, navigation }) {
     }
   };
 
+  const onToggleImportant = async () => {
+    try {
+      const next = habit?.important ? 0 : 1;
+      const h = await setImportant({ habitId, important: next });
+      setData((d) => ({ ...d, habit: h || { ...d.habit, important: next } }));
+    } catch (e) {
+      Alert.alert('Erreur', domainErrorMessageFr(String(e.message || e)));
+    }
+  };
+
   // Archivage de l'habitude
   const onArchive = async () => {
     Alert.alert(
@@ -374,18 +385,45 @@ export function HabitDetailScreen({ route, navigation }) {
           >
             <View style={styles.headerContent}>
               <View style={styles.headerInfo}>
-                <Text variant="title" style={styles.habitTitle}>
-                  {habit?.name}
-                </Text>
+                <View style={styles.titleRow}>
+                  <Text variant="title" style={[styles.habitTitle, { flex: 1 }]} numberOfLines={1}>
+                    {habit?.name}
+                  </Text>
+                  <Pressable onPress={onToggleImportant} style={styles.starBtn} hitSlop={10}>
+                    <Ionicons
+                      name={habit?.important ? 'star' : 'star-outline'}
+                      size={20}
+                      color={habit?.important ? '#F59E0B' : theme.colors.textMuted}
+                    />
+                  </Pressable>
+                </View>
                 <Text variant="caption" style={styles.habitDescription}>
                   {habit?.description || habit?.replacement || 'Aucune description'}
                 </Text>
 
-                <View style={styles.phaseBadge}>
-                  <View style={[styles.phaseDot, { backgroundColor: getPhaseColor(phase.phase) }]} />
-                  <Text variant="caption" style={styles.phaseText}>
-                    Phase {phase.phase} · {phaseInfo.name}
-                  </Text>
+                <View style={styles.badgesRow}>
+                  <View style={styles.phaseBadge}>
+                    <View style={[styles.phaseDot, { backgroundColor: getPhaseColor(phase.phase) }]} />
+                    <Text variant="caption" style={styles.phaseText}>
+                      Phase {phase.phase} · {phaseInfo.name}
+                    </Text>
+                  </View>
+
+                  <View
+                    style={[
+                      styles.modeBadge,
+                      habit?.discipline_mode === DisciplineMode.strict ? styles.modeStrict : styles.modeSoft,
+                    ]}
+                  >
+                    <Ionicons
+                      name={habit?.discipline_mode === DisciplineMode.strict ? 'flash' : 'heart'}
+                      size={14}
+                      color={habit?.discipline_mode === DisciplineMode.strict ? '#F59E0B' : '#22D3EE'}
+                    />
+                    <Text variant="caption" style={styles.modeText}>
+                      {habit?.discipline_mode === DisciplineMode.strict ? 'Stricte' : 'Douce'}
+                    </Text>
+                  </View>
                 </View>
               </View>
 
@@ -396,6 +434,18 @@ export function HabitDetailScreen({ route, navigation }) {
               </View>
             </View>
           </LinearGradient>
+        </Card>
+
+        <Card style={styles.messageCard}>
+          <View style={styles.messageHeader}>
+            <Ionicons name="chatbox-ellipses-outline" size={18} color={theme.colors.textMuted} />
+            <Text variant="subtitle" style={{ marginLeft: 10, flex: 1 }}>
+              Message de phase
+            </Text>
+          </View>
+          <Text variant="muted" style={styles.messageText}>
+            {phaseMessage}
+          </Text>
         </Card>
 
         <Card style={styles.dateCard}>
@@ -812,6 +862,21 @@ const styles = StyleSheet.create({
     flex: 1,
     marginRight: 16,
   },
+  titleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  starBtn: {
+    width: 40,
+    height: 40,
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+    backgroundColor: 'rgba(255,255,255,0.04)',
+  },
   habitTitle: {
     fontSize: 22,
     fontWeight: '700',
@@ -821,6 +886,12 @@ const styles = StyleSheet.create({
     color: theme.colors.textMuted,
     marginBottom: 12,
     lineHeight: 20,
+  },
+  badgesRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    gap: 10,
   },
   phaseBadge: {
     flexDirection: 'row',
@@ -832,6 +903,20 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.surface2,
     gap: 6,
   },
+  modeBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+    gap: 6,
+  },
+  modeSoft: { backgroundColor: 'rgba(34,211,238,0.10)' },
+  modeStrict: { backgroundColor: 'rgba(245,158,11,0.10)' },
+  modeText: { fontSize: 12, fontWeight: '700', color: theme.colors.text },
   phaseDot: {
     width: 8,
     height: 8,
@@ -849,6 +934,18 @@ const styles = StyleSheet.create({
     color: theme.colors.textMuted,
     fontSize: 12,
   },
+  messageCard: {
+    marginHorizontal: theme.spacing.m,
+    marginBottom: theme.spacing.m,
+    padding: theme.spacing.l,
+    borderRadius: 20,
+  },
+  messageHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  messageText: { lineHeight: 20 },
   dateCard: {
     marginHorizontal: theme.spacing.m,
     marginBottom: theme.spacing.m,

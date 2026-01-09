@@ -1,5 +1,5 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { listHabitsWithSummary, createHabit, getHabitById, archiveHabit, deleteHabit } from '../data/habitsRepo';
+import { listHabitsWithSummary, createHabit, getHabitById, archiveHabit, deleteHabit, setHabitImportant } from '../data/habitsRepo';
 import { listLogsForHabit, setDayState, upsertNote } from '../data/logsRepo';
 import { recordSosOncePerDay, hasSosForDate } from '../data/sosRepo';
 import { DayState } from '../../../core/utils/constants';
@@ -47,7 +47,12 @@ export function HabitsProvider({ children }) {
     const key = state.habits.map((h) => h.id).join('|');
     if (notifSyncRef.current.key === key) return;
     notifSyncRef.current.key = key;
-    syncDailyCheckinsForHabits(state.habits);
+
+    (async () => {
+      try {
+        await syncDailyCheckinsForHabits(state.habits);
+      } catch {}
+    })();
   }, [state.habits, state.isReady]);
 
   const createNewHabit = useCallback(
@@ -56,7 +61,11 @@ export function HabitsProvider({ children }) {
       try {
         const habit = await createHabit(payload);
         const habits = await refreshHabits();
-        if (!isExpoGo()) syncDailyCheckinsForHabits(habits);
+        if (!isExpoGo()) {
+          try {
+            await syncDailyCheckinsForHabits(habits);
+          } catch {}
+        }
         return habit;
       } finally {
         setState((s) => ({ ...s, isBusy: false }));
@@ -81,7 +90,12 @@ export function HabitsProvider({ children }) {
         const tomorrowId = addDaysLocal(dateId, 1);
         const tomorrowIndex = dayIndexFromStart(habit.start_date, tomorrowId);
         if (tomorrowIndex >= 1 && tomorrowIndex <= Number(habit.duration_days)) {
-          await scheduleNoTwoDaysForTomorrow({ habitId: habit.id, habitName: habit.name, tomorrowDateId: tomorrowId });
+          await scheduleNoTwoDaysForTomorrow({
+            habitId: habit.id,
+            habitName: habit.name,
+            tomorrowDateId: tomorrowId,
+            disciplineMode: habit.discipline_mode,
+          });
         }
       }
 
@@ -117,6 +131,15 @@ export function HabitsProvider({ children }) {
       await archiveHabit(habitId);
       await cancelAllForHabit(habitId);
       await refreshHabits();
+    },
+    [refreshHabits]
+  );
+
+  const setImportant = useCallback(
+    async ({ habitId, important }) => {
+      const h = await setHabitImportant(habitId, important);
+      await refreshHabits();
+      return h;
     },
     [refreshHabits]
   );
@@ -163,6 +186,7 @@ export function HabitsProvider({ children }) {
       recordSosToday,
       getSosEligibility,
       archive,
+      setImportant,
       remove,
     }),
     [
@@ -175,6 +199,7 @@ export function HabitsProvider({ children }) {
       recordSosToday,
       getSosEligibility,
       archive,
+      setImportant,
       remove,
     ]
   );

@@ -121,7 +121,7 @@ export function NoteEditorScreen({ navigation, route }) {
   return (
     <Screen>
       <Enter style={{ flex: 1 }}>
-        <ScrollView contentContainerStyle={{ gap: 12, paddingBottom: 120 }} keyboardShouldPersistTaps="handled">
+        <ScrollView contentContainerStyle={{ gap: 12, paddingBottom: 120 }} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
         <View style={styles.topbar}>
           <Pressable onPress={onBack} style={styles.iconBtn} hitSlop={10}>
             <Ionicons name="chevron-back" size={20} color={theme.colors.text} />

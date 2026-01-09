@@ -48,7 +48,7 @@ export const phaseProgress = (dayIndex) => {
 };
 
 export const formatDate = (dateId, locale = 'fr-FR') => {
-  const date = new Date(dateId);
+  const date = fromLocalDateId(dateId);
   return date.toLocaleDateString(locale, {
     weekday: 'long',
     day: 'numeric',

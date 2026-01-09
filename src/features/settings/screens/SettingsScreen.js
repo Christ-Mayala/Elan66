@@ -9,7 +9,14 @@ import { Button } from '../../../core/ui/Button';
 import { theme } from '../../../core/theme/theme';
 import { exportAllDataToJson, importAllDataFromJson } from '../../../core/services/exportImport';
 import { domainErrorMessageFr } from '../../../core/utils/domainErrors';
-import { getDailyReminderTime, setDailyReminderTime, syncDailyCheckinsForHabits } from '../../../core/services/notifications';
+import {
+  configureNotifications,
+  getDailyReminderTime,
+  getNotifPermissions,
+  requestNotifPermissions,
+  setDailyReminderTime,
+  syncDailyCheckinsForHabits,
+} from '../../../core/services/notifications';
 import { isExpoGo } from '../../../core/utils/runtime';
 import { useHabits } from '../../habits/context/HabitsContext';
 
@@ -18,12 +25,20 @@ export function SettingsScreen() {
 
   const [hour, setHour] = useState('20');
   const [minute, setMinute] = useState('30');
+  const [notifGranted, setNotifGranted] = useState(null);
 
   useEffect(() => {
     (async () => {
       const t = await getDailyReminderTime();
       setHour(String(t.hour));
       setMinute(String(t.minute).padStart(2, '0'));
+
+      if (!isExpoGo()) {
+        try {
+          const p = await getNotifPermissions();
+          setNotifGranted(Boolean(p?.granted || p?.ios?.status));
+        } catch {}
+      }
     })();
   }, []);
 
@@ -33,12 +48,40 @@ export function SettingsScreen() {
     return `${h}:${m}`;
   }, [hour, minute]);
 
+  const onEnableNotifs = async () => {
+    if (isExpoGo()) {
+      Alert.alert('Indisponible', 'Dans Expo Go, les notifications sont limitées. Utilise un dev build pour activer totalement.');
+      return;
+    }
+    try {
+      await configureNotifications();
+      const p = await requestNotifPermissions();
+      const granted = Boolean(p?.granted || p?.ios?.status);
+      setNotifGranted(granted);
+      if (!granted) {
+        Alert.alert('Autorisation requise', 'Active les notifications dans les réglages système du téléphone.');
+        return;
+      }
+      Alert.alert('OK', 'Notifications activées.');
+    } catch (e) {
+      Alert.alert('Erreur', domainErrorMessageFr(String(e.message || e)));
+    }
+  };
+
   const onSaveTime = async () => {
     try {
       const t = await setDailyReminderTime({ hour, minute });
       if (!isExpoGo()) {
-        await syncDailyCheckinsForHabits(state.habits);
-        Alert.alert('OK', `Rappel quotidien : ${String(t.hour).padStart(2, '0')}:${String(t.minute).padStart(2, '0')}`);
+        await configureNotifications();
+        const p = await requestNotifPermissions();
+        const granted = Boolean(p?.granted || p?.ios?.status);
+        setNotifGranted(granted);
+        if (granted) {
+          await syncDailyCheckinsForHabits(state.habits);
+          Alert.alert('OK', `Rappel quotidien : ${String(t.hour).padStart(2, '0')}:${String(t.minute).padStart(2, '0')}`);
+          return;
+        }
+        Alert.alert('Autorisation requise', `Heure enregistrée (${String(t.hour).padStart(2, '0')}:${String(t.minute).padStart(2, '0')}). Active les notifications dans les réglages système.`);
         return;
       }
       Alert.alert('OK', `Heure enregistrée : ${String(t.hour).padStart(2, '0')}:${String(t.minute).padStart(2, '0')}`);
@@ -83,7 +126,7 @@ export function SettingsScreen() {
   return (
     <Screen>
       <Enter style={{ flex: 1 }}>
-        <ScrollView contentContainerStyle={{ gap: 12, paddingBottom: 120 }} keyboardShouldPersistTaps="handled">
+        <ScrollView contentContainerStyle={{ gap: 12, paddingBottom: 120 }} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
         <View style={styles.topBar}>
           <View style={styles.avatar}>
             <Ionicons name="settings" size={18} color={theme.colors.textMuted} />
@@ -106,7 +149,7 @@ export function SettingsScreen() {
             <View style={{ flex: 1 }}>
               <Text variant="subtitle">Notifications</Text>
               <Text variant="muted" style={{ marginTop: 2 }}>
-                Rappel quotidien (local)
+                Rappel quotidien (local){notifGranted === null ? '' : notifGranted ? ' · activées' : ' · désactivées'}
               </Text>
             </View>
           </View>
@@ -132,7 +175,33 @@ export function SettingsScreen() {
               </View>
             </View>
 
-            <Button title="Enregistrer" onPress={onSaveTime} />
+            <View style={{ gap: 10 }}>
+              <Button title="Activer les notifications" variant="ghost" onPress={onEnableNotifs} />
+              <Button title="Enregistrer" onPress={onSaveTime} />
+            </View>
+          </View>
+        </Card>
+
+        <Card style={{ padding: 0 }}>
+          <View style={styles.blockHeader}>
+            <View style={[styles.blockIcon, { backgroundColor: 'rgba(245,158,11,0.14)' }]}>
+              <Ionicons name="star" size={18} color={theme.colors.warn} />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text variant="subtitle">Important</Text>
+              <Text variant="muted" style={{ marginTop: 2 }}>
+                Mets une habitude en ★ pour la remonter en haut.
+              </Text>
+            </View>
+          </View>
+
+          <View style={{ padding: theme.spacing.m, paddingTop: 0, gap: 10 }}>
+            <View style={styles.rowInfo}>
+              <Text variant="muted" style={{ flex: 1 }}>
+                Tu peux activer ★ dans le détail d'une habitude.
+              </Text>
+              <Ionicons name="chevron-forward" size={18} color={theme.colors.textMuted} />
+            </View>
           </View>
         </Card>
 
